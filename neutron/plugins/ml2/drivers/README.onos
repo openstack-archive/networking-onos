@@ -1,0 +1,41 @@
+ONOS ML2 MechanismDriver
+================================
+ONOS is an Open Source SDN Controller developed by a plethora of
+companies and hosted by the Linux Foundation. The ONOS website
+contains more information on the capabilities ONOS provides:
+
+    http://www.ONOS.org
+
+Theory of operation
+===================
+The OpenStack Neutron integration with ONOS consists of the ML2
+MechanismDriver which acts as a REST proxy and passess all Neutron API
+calls into ONOS. ONOS contains a NB REST service (called
+the NeutronAPIService) which caches data from these proxied API calls and
+makes it available to other services inside of ONOS. One current
+user of the SB side of the NeutronAPIService is the OVSDB code in
+ONOS. OVSDB uses the neutron information to isolate tenant networks
+using GRE or VXLAN tunnels.
+
+How to use the ONOS ML2 MechanismDriver
+===============================================
+To use the ML2 MechanismDriver, you need to ensure you have it configured
+as one of the "mechanism_drivers" in ML2:
+
+    mechanism_drivers=onos
+
+The next step is to setup the "[ml2_onos]" section in either the ml2_conf.ini
+file or in a separate ml2_conf_onos.ini file. An example is shown below:
+
+    [ml2_onos]
+    password = admin
+    username = admin
+    url = http://192.168.100.1:8080/controller/nb/v2/neutron
+
+When starting ONOS, ensure you have the SimpleForwarding application
+disabled or remove the .jar file from the plugins directory. Also ensure you
+start ONOS before you start OpenStack Neutron.
+
+There is devstack support for this which will automatically pull down ONOS
+and start it as part of devstack as well. The patch for this will likely merge
+around the same time as this patch merges.
