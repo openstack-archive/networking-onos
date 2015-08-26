@@ -13,16 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import requests
-
+from networking_onos.common import utils as onos_utils
+from neutron.plugins.ml2 import driver_api as api
 from oslo_config import cfg
 from oslo_log import helpers as log_helpers
-from oslo_log import log as logging
-from oslo_serialization import jsonutils
-
-from neutron.plugins.ml2 import driver_api as api
-
-LOG = logging.getLogger(__name__)
 
 ONOS_DRIVER_OPTS = [
     cfg.StrOpt('url_path',
@@ -38,23 +32,6 @@ ONOS_DRIVER_OPTS = [
 ]
 
 cfg.CONF.register_opts(ONOS_DRIVER_OPTS, "ml2_onos")
-
-
-def send_msg(onos_path, onos_auth, msg_type, entity_path, entity=None):
-    """Send message to the ONOS controller."""
-
-    path = '/'.join([onos_path, entity_path])
-    hdr = {'Content-Type': 'application/json'}
-    body = jsonutils.dumps(entity, indent=2) if entity else None
-    LOG.debug("Sending MSG_TYPE (%(msg)s) URL (%(path)s) "
-              "OBJECT (%(entity)s) BODY (%(body)s)",
-              {'msg': msg_type, 'path': path,
-               'entity': entity, 'body': body})
-    req = requests.request(method=msg_type, url=path,
-                           headers=hdr, data=body,
-                           auth=onos_auth)
-    # Let's raise voice for an error
-    req.raise_for_status()
 
 
 class ONOSMechanismDriver(api.MechanismDriver):
@@ -78,58 +55,58 @@ class ONOSMechanismDriver(api.MechanismDriver):
     def create_network_postcommit(self, context):
         entity_path = 'networks/' + context.current['id']
         resource = context.current.copy()
-        send_msg(self.onos_path, self.onos_auth, 'post',
-                 entity_path, {'network': resource})
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'post',
+                            entity_path, {'network': resource})
 
     @log_helpers.log_method_call
     def update_network_postcommit(self, context):
         entity_path = 'networks/' + context.current['id']
         resource = context.current.copy()
-        send_msg(self.onos_path, self.onos_auth, 'put',
-                 entity_path, {'network': resource})
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'put',
+                            entity_path, {'network': resource})
 
     @log_helpers.log_method_call
     def delete_network_postcommit(self, context):
         entity_path = 'networks/' + context.current['id']
-        send_msg(self.onos_path, self.onos_auth, 'delete',
-                 entity_path)
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'delete',
+                            entity_path)
 
     @log_helpers.log_method_call
     def create_subnet_postcommit(self, context):
         entity_path = 'subnets/' + context.current['id']
         resource = context.current.copy()
-        send_msg(self.onos_path, self.onos_auth, 'post',
-                 entity_path, {'subnet': resource})
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'post',
+                            entity_path, {'subnet': resource})
 
     @log_helpers.log_method_call
     def update_subnet_postcommit(self, context):
         entity_path = 'subnets/' + context.current['id']
         resource = context.current.copy()
-        send_msg(self.onos_path, self.onos_auth, 'put',
-                 entity_path, {'subnet': resource})
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'put',
+                            entity_path, {'subnet': resource})
 
     @log_helpers.log_method_call
     def delete_subnet_postcommit(self, context):
         entity_path = 'subnets/' + context.current['id']
-        send_msg(self.onos_path, self.onos_auth, 'delete',
-                 entity_path)
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'delete',
+                            entity_path)
 
     @log_helpers.log_method_call
     def create_port_postcommit(self, context):
         entity_path = 'ports/' + context.current['id']
         resource = context.current.copy()
-        send_msg(self.onos_path, self.onos_auth, 'post',
-                 entity_path, {'port': resource})
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'post',
+                            entity_path, {'port': resource})
 
     @log_helpers.log_method_call
     def update_port_postcommit(self, context):
         entity_path = 'ports/' + context.current['id']
         resource = context.current.copy()
-        send_msg(self.onos_path, self.onos_auth, 'put',
-                 entity_path, {'port': resource})
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'put',
+                            entity_path, {'port': resource})
 
     @log_helpers.log_method_call
     def delete_port_postcommit(self, context):
         entity_path = 'ports/' + context.current['id']
-        send_msg(self.onos_path, self.onos_auth, 'delete',
-                 entity_path)
+        onos_utils.send_msg(self.onos_path, self.onos_auth, 'delete',
+                            entity_path)

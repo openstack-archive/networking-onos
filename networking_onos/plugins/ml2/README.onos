@@ -8,7 +8,7 @@ High Availability, scale-out and better performance.
 Mode of Working:
 ================
 The networking-onos project provides a thin layer which makes the
-communication between ONOS and openstack neutron possible via ReST
+communication between ONOS and OpenStack neutron possible via ReST
 call. The driver code can be downloaded from:
 
     https://git.openstack.org/cgit/openstack/networking-onos
