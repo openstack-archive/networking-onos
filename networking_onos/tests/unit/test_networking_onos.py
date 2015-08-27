@@ -94,8 +94,11 @@ class OnosMechanismDriverTestCase(base.TestCase,
         if oper_type is not 'delete':
             entity = {obj_type: context.current.copy()}
             body = jsonutils.dumps(entity, indent=2)
-        url = '%s/%s/%s' % (self.onos_path, obj_type + 's',
-                            context.current['id'])
+        if oper_type == 'post':
+            url = '%s/%s' % (self.onos_path, obj_type + 's')
+        else:
+            url = '%s/%s/%s' % (self.onos_path, obj_type + 's',
+                                context.current['id'])
         kwargs = {'url': url, 'data': body}
         mock_method.assert_called_once_with(
             method=oper_type,

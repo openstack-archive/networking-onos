@@ -53,7 +53,7 @@ class ONOSMechanismDriver(api.MechanismDriver):
 
     @log_helpers.log_method_call
     def create_network_postcommit(self, context):
-        entity_path = 'networks/' + context.current['id']
+        entity_path = 'networks'
         resource = context.current.copy()
         onos_utils.send_msg(self.onos_path, self.onos_auth, 'post',
                             entity_path, {'network': resource})
@@ -73,7 +73,7 @@ class ONOSMechanismDriver(api.MechanismDriver):
 
     @log_helpers.log_method_call
     def create_subnet_postcommit(self, context):
-        entity_path = 'subnets/' + context.current['id']
+        entity_path = 'subnets'
         resource = context.current.copy()
         onos_utils.send_msg(self.onos_path, self.onos_auth, 'post',
                             entity_path, {'subnet': resource})
@@ -93,7 +93,7 @@ class ONOSMechanismDriver(api.MechanismDriver):
 
     @log_helpers.log_method_call
     def create_port_postcommit(self, context):
-        entity_path = 'ports/' + context.current['id']
+        entity_path = 'ports'
         resource = context.current.copy()
         onos_utils.send_msg(self.onos_path, self.onos_auth, 'post',
                             entity_path, {'port': resource})
