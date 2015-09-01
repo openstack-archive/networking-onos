@@ -14,9 +14,15 @@
 #    under the License.
 
 from networking_onos.common import utils as onos_utils
+from neutron.common import constants as n_const
+from neutron.extensions import portbindings
+from neutron.plugins.common import constants
 from neutron.plugins.ml2 import driver_api as api
 from oslo_config import cfg
 from oslo_log import helpers as log_helpers
+from oslo_log import log as logging
+
+LOG = logging.getLogger(__name__)
 
 ONOS_DRIVER_OPTS = [
     cfg.StrOpt('url_path',
@@ -45,6 +51,8 @@ class ONOSMechanismDriver(api.MechanismDriver):
         conf = cfg.CONF.ml2_onos
         self.onos_path = conf.url_path
         self.onos_auth = (conf.username, conf.password)
+        self.vif_type = portbindings.VIF_TYPE_OVS
+        self.vif_details = {portbindings.CAP_PORT_FILTER: True}
 
     def initialize(self):
         # No action required as of now. Can be extended in
@@ -110,3 +118,36 @@ class ONOSMechanismDriver(api.MechanismDriver):
         entity_path = 'ports/' + context.current['id']
         onos_utils.send_msg(self.onos_path, self.onos_auth, 'delete',
                             entity_path)
+
+    @log_helpers.log_method_call
+    def bind_port(self, context):
+        """Set porting binding data for use with nova."""
+        LOG.debug("Attempting to bind port %(port)s on network %(network)s",
+                  {'port': context.current['id'],
+                   'network': context.network.current['id']})
+        # Prepared porting binding data
+        for segment in context.segments_to_bind:
+            if self.check_segment(segment):
+                context.set_binding(segment[api.ID],
+                                    self.vif_type,
+                                    self.vif_details,
+                                    status=n_const.PORT_STATUS_ACTIVE)
+                LOG.debug("Bound using segment: %s", segment)
+                return
+            else:
+                LOG.debug("Refusing to bind port for segment ID %(id)s, "
+                          "segment %(seg)s, phys net %(physnet)s, and "
+                          "network type %(nettype)s",
+                          {'id': segment[api.ID],
+                           'seg': segment[api.SEGMENTATION_ID],
+                           'physnet': segment[api.PHYSICAL_NETWORK],
+                           'nettype': segment[api.NETWORK_TYPE]})
+
+    @log_helpers.log_method_call
+    def check_segment(self, segment):
+        """Verify a segment is valid for the ONOS MechanismDriver."""
+
+        return segment[api.NETWORK_TYPE] in [constants.TYPE_LOCAL,
+                                             constants.TYPE_GRE,
+                                             constants.TYPE_VXLAN,
+                                             constants.TYPE_VLAN]
