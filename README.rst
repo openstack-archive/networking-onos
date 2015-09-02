@@ -1,10 +1,8 @@
 Welcome!
 ========
 
-This is the external, decomposed plugin library for the
-Open Networking Operating System ML2 MechanismDriver.
-This is the backend code which handles communication with
-Open Networking Operating (ONOS).
+This repository contains the code which makes the interaction between
+Open Networking Operating System (ONOS) and Openstack Neutron possible.
 
 External Resources:
 ===================
@@ -12,7 +10,7 @@ External Resources:
 The ONOS homepage:
    http://onosproject.org/
 
-The Launchpad page for openstack/networking-odl:
+The Launchpad page for openstack/networking-onos:
    https://launchpad.net/networking-onos
 
 File bugs for this project here:
