@@ -15,6 +15,10 @@
 
 import mock
 import networking_onos.plugins.ml2.mech_driver as onos_driver
+from neutron.common import constants as n_const
+from neutron.plugins.common import constants
+from neutron.plugins.ml2 import driver_api as api
+from neutron.plugins.ml2 import driver_context as ctx
 from oslo_config import cfg
 from oslo_serialization import jsonutils
 import requests
@@ -176,3 +180,52 @@ class OnosMechanismDriverTestCase(base.TestCase,
                         return_value=resp) as mock_method:
             self.delete_port_postcommit(context)
             self._test_response(context, 'delete', 'port', mock_method)
+
+    # given valid  and invalid segments
+    valid_segment = {
+        api.ID: 'API_ID',
+        api.NETWORK_TYPE: constants.TYPE_LOCAL,
+        api.SEGMENTATION_ID: 'API_SEGMENTATION_ID',
+        api.PHYSICAL_NETWORK: 'API_PHYSICAL_NETWORK'}
+
+    invalid_segment = {
+        api.ID: 'API_ID',
+        api.NETWORK_TYPE: constants.TYPE_NONE,
+        api.SEGMENTATION_ID: 'API_SEGMENTATION_ID',
+        api.PHYSICAL_NETWORK: 'API_PHYSICAL_NETWORK'}
+
+    def test_check_segment(self):
+        """Validate the check_segment method."""
+
+        # given driver and all network types
+        all_network_types = [constants.TYPE_FLAT, constants.TYPE_GRE,
+                             constants.TYPE_LOCAL, constants.TYPE_VXLAN,
+                             constants.TYPE_VLAN, constants.TYPE_NONE]
+
+        # when checking segments network type
+        valid_types = {network_type
+                       for network_type in all_network_types
+                       if self.check_segment({api.NETWORK_TYPE: network_type})}
+
+        # then true is returned only for valid network types
+        self.assertEqual({constants.TYPE_LOCAL, constants.TYPE_GRE,
+                          constants.TYPE_VXLAN, constants.TYPE_VLAN},
+                         valid_types)
+
+    def test_bind_port(self):
+        self.vif_type = "MY_VIF_TYPE"
+        self.vif_details = "MY_VIF_DETAILS"
+        network = mock.MagicMock(spec=api.NetworkContext)
+        port_context = mock.MagicMock(
+            spec=ctx.PortContext, current={'id': 'CURRENT_CONTEXT_ID'},
+            segments_to_bind=[self.valid_segment, self.invalid_segment],
+            network=network)
+
+        # when port is bound
+        self.bind_port(port_context)
+
+        # then context binding is setup with returned vif_type and valid
+        # segment api ID
+        port_context.set_binding.assert_called_once_with(
+            self.valid_segment[api.ID], self.vif_type,
+            self.vif_details, status=n_const.PORT_STATUS_ACTIVE)
