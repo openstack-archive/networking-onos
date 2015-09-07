@@ -1,0 +1,29 @@
+Open Networking Operating System (ONOS) L3 Plugin
+=================================================
+ONOS is a carrier grade SDN open operating system designed for
+High Availability, scale-out and better performance.
+
+    http://www.onosproject.org/
+
+Mode of Working:
+================
+networking-onos.plugins.l3 define onos plug-in for supporting neutron's router
+functionality. This shim layer makes the communication between ONOS and
+Openstack neutron possible via ReST call.
+The driver code can be downloaded from:
+
+    https://git.openstack.org/cgit/openstack/networking-onos
+
+Using ONOS L3 Plugin
+====================
+To use ONOS L3 Plugin one should
+1. Make sure networking-onos code is downloaded and installed. If doing
+   mannually then download the code, go inside networking_onos folder
+   and finally run "sudo python setup.py install" otherwise download the
+   required package version from "https://pypi.python.org/pypi/networking-onos/"
+   and install using pip.
+
+2. Configure ONOS credentials in networking_onos/etc/conf_onos.ini.
+
+3. Start neutron server mentioning networking_onos/etc/conf_onos.ini as
+   one of the config-file with ONOS L3 Plugin support.

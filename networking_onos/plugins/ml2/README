@@ -18,12 +18,16 @@ Using ONOS ML2 MechanismDriver
 To use ONOS ML2 MechanismDriver one should
 1. Make sure networking-onos code is downloaded and installed. If doing
    mannually then download the code, go inside networking_onos folder
-   and finally run "sudo python setup.py install" otherwise install
-   using pip.
+   and finally run "sudo python setup.py install" otherwise download the
+   required package version from "https://pypi.python.org/pypi/networking-onos/"
+   and install using pip.
 
 2. Configure ONOS as the required ML2 "mechanism_drivers" in
    neutron/plugins/ml2/ml2_conf.ini:
 
     mechanism_drivers=onos_ml2
 
-3. Configure "[ml2_onos]" in networking_onos/etc/ml2_onos_conf.ini
+3. Configure ONOS credentials in networking_onos/etc/conf_onos.ini.
+
+4. Start neutron server mentioning networking_onos/etc/conf_onos.ini as
+   one of the config-file.

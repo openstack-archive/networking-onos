@@ -13,31 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from networking_onos.common import utils as onos_utils
-from neutron.common import constants as n_const
-from neutron.extensions import portbindings
-from neutron.plugins.common import constants
-from neutron.plugins.ml2 import driver_api as api
 from oslo_config import cfg
 from oslo_log import helpers as log_helpers
 from oslo_log import log as logging
 
+from neutron.common import constants as n_const
+from neutron.extensions import portbindings
+from neutron.plugins.common import constants
+from neutron.plugins.ml2 import driver_api as api
+
+from networking_onos.common import config  # noqa
+from networking_onos.common import utils as onos_utils
+
 LOG = logging.getLogger(__name__)
-
-ONOS_DRIVER_OPTS = [
-    cfg.StrOpt('url_path',
-               default='',
-               help=_('ONOS ReST interface URL')),
-    cfg.StrOpt('username',
-               default='',
-               help=_('Username for authentication.')),
-    cfg.StrOpt('password',
-               default='',
-               secret=True,  # do not expose value in the logs
-               help=_('Password for authentication.'))
-]
-
-cfg.CONF.register_opts(ONOS_DRIVER_OPTS, "ml2_onos")
 
 
 class ONOSMechanismDriver(api.MechanismDriver):
@@ -48,9 +36,8 @@ class ONOSMechanismDriver(api.MechanismDriver):
     possible.
     """
     def __init__(self):
-        conf = cfg.CONF.ml2_onos
-        self.onos_path = conf.url_path
-        self.onos_auth = (conf.username, conf.password)
+        self.onos_path = cfg.CONF.onos.url_path
+        self.onos_auth = (cfg.CONF.onos.username, cfg.CONF.onos.password)
         self.vif_type = portbindings.VIF_TYPE_OVS
         self.vif_details = {portbindings.CAP_PORT_FILTER: True}
 
@@ -121,7 +108,7 @@ class ONOSMechanismDriver(api.MechanismDriver):
 
     @log_helpers.log_method_call
     def bind_port(self, context):
-        """Set porting binding data for use with nova."""
+        """Set port binding data for use with nova."""
         LOG.debug("Attempting to bind port %(port)s on network %(network)s",
                   {'port': context.current['id'],
                    'network': context.network.current['id']})
@@ -132,10 +119,10 @@ class ONOSMechanismDriver(api.MechanismDriver):
                                     self.vif_type,
                                     self.vif_details,
                                     status=n_const.PORT_STATUS_ACTIVE)
-                LOG.debug("Bound using segment: %s", segment)
+                LOG.debug("Port bound successful for segment: %s", segment)
                 return
             else:
-                LOG.debug("Refusing to bind port for segment ID %(id)s, "
+                LOG.debug("Port bound un-successfult for segment ID %(id)s, "
                           "segment %(seg)s, phys net %(physnet)s, and "
                           "network type %(nettype)s",
                           {'id': segment[api.ID],
@@ -145,7 +132,7 @@ class ONOSMechanismDriver(api.MechanismDriver):
 
     @log_helpers.log_method_call
     def check_segment(self, segment):
-        """Verify a segment is valid for the ONOS MechanismDriver."""
+        """Check whether segment is valid for the ONOS MechanismDriver."""
 
         return segment[api.NETWORK_TYPE] in [constants.TYPE_LOCAL,
                                              constants.TYPE_GRE,

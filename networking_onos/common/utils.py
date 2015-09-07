@@ -36,3 +36,9 @@ def send_msg(onos_path, onos_auth, msg_type, entity_path, entity=None):
                            auth=onos_auth)
     # Let's raise voice for an error
     req.raise_for_status()
+
+
+def safe_delete_from_dict(dict, keys):
+    """Ignore key errors when deleting from a dictionary."""
+    for key in keys:
+        dict.pop(key, None)

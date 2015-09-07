@@ -14,16 +14,19 @@
 #    under the License.
 
 import mock
-import networking_onos.plugins.ml2.mech_driver as onos_driver
+import requests
+
+from oslo_config import cfg
+from oslo_serialization import jsonutils
+from oslotest import base
+
 from neutron.common import constants as n_const
 from neutron.plugins.common import constants
 from neutron.plugins.ml2 import driver_api as api
 from neutron.plugins.ml2 import driver_context as ctx
-from oslo_config import cfg
-from oslo_serialization import jsonutils
-import requests
 
-from networking_onos.tests.unit import base
+import networking_onos.plugins.ml2.driver as onos_ml2_driver
+
 
 fake_network_uuid = 'd897e21a-dfd6-4331-a5dd-7524fa421c3e'
 fake_network_object = {'status': 'ACTIVE',
@@ -76,17 +79,20 @@ fake_port_object = {'status': 'DOWN',
                     'mac_address': '12:34:56 :78:21:b6'}
 
 
-class OnosMechanismDriverTestCase(base.TestCase,
-                                  onos_driver.ONOSMechanismDriver):
+class ONOSMechanismDriverTestCase(base.BaseTestCase,
+                                  onos_ml2_driver.ONOSMechanismDriver):
 
     def setUp(self):
-        super(OnosMechanismDriverTestCase, self).setUp()
-        cfg.CONF.set_override('url_path', 'http://127.0.0.1:1111', 'ml2_onos')
-        cfg.CONF.set_override('username', 'onos_user', 'ml2_onos')
-        cfg.CONF.set_override('password', 'awesome', 'ml2_onos')
-        self.onos_path = cfg.CONF.ml2_onos.url_path
-        self.onos_auth = (cfg.CONF.ml2_onos.username,
-                          cfg.CONF.ml2_onos.password)
+        super(ONOSMechanismDriverTestCase, self).setUp()
+        self.set_test_config()
+
+    def set_test_config(self):
+        cfg.CONF.set_override('url_path', 'http://127.0.0.1:1111', 'onos')
+        cfg.CONF.set_override('username', 'onos_user', 'onos')
+        cfg.CONF.set_override('password', 'awesome', 'onos')
+        self.onos_path = cfg.CONF.onos.url_path
+        self.onos_auth = (cfg.CONF.onos.username,
+                          cfg.CONF.onos.password)
 
     def _mock_req_resp(self, status_code):
         response = mock.Mock(status_code=status_code)
