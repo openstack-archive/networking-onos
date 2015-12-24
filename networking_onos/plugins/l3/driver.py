@@ -21,7 +21,6 @@ from neutron.api.rpc.handlers import l3_rpc
 from neutron.common import constants as q_const
 from neutron.common import rpc as n_rpc
 from neutron.common import topics
-from neutron.db import db_base_plugin_v2
 from neutron.db import extraroute_db
 from neutron.db import l3_agentschedulers_db
 from neutron.db import l3_gwmode_db
@@ -31,8 +30,13 @@ from networking_onos.common import config   # noqa
 from networking_onos.plugins.l3 import floating_ip as onos_fip
 from networking_onos.plugins.l3 import router as onos_router
 
+try:
+    from neutron.db.db_base_plugin_v2 import common_db_mixin
+except ImportError as e:
+    from neutron.db import common_db_mixin
 
-class ONOSL3Plugin(db_base_plugin_v2.NeutronDbPluginV2,
+
+class ONOSL3Plugin(common_db_mixin.CommonDbMixin,
                    extraroute_db.ExtraRoute_db_mixin,
                    l3_gwmode_db.L3_NAT_db_mixin,
                    l3_agentschedulers_db.L3AgentSchedulerDbMixin,
