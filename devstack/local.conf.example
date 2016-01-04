@@ -1,0 +1,41 @@
+[[local|localrc]]
+LOGFILE=stack.sh.log
+SCREEN_LOGDIR=/opt/stack/data/log
+LOG_COLOR=False
+
+disable_service swift
+disable_service cinder
+disable_service n-net
+enable_service q-svc
+enable_service q-dhcp
+enable_service q-l3
+enable_service q-meta
+disable_service q-vpn
+disable_service q-metering
+disable_service q-lbaas
+disable_service q-fwaas
+enable_service neutron
+disable_service tempest
+
+enable_plugin networking-onos http://git.openstack.org/openstack/networking-onos
+
+#ONOS_USING_EXISTING_JAVA=True
+ENABLE_TENANT_TUNNELS=True
+IP_VERSION=4
+HOST_IP=127.0.0.1
+SERVICE_HOST=${HOST_IP}
+NOVA_VNC_ENABLED=True
+NOVNCPROXY_URL="http://$SERVICE_HOST:6080/vnc_auto.html"
+VNCSERVER_PROXYCLIENT_ADDRESS=$SERVICE_HOST
+VNCSERVER_LISTEN=0.0.0.0
+MYSQL_HOST=$SERVICE_HOST
+RABBIT_HOST=$SERVICE_HOST
+GLANCE_HOSTPORT=$SERVICE_HOST:9292
+KEYSTONE_AUTH_HOST=$SERVICE_HOST
+KEYSTONE_SERVICE_HOST=$SERVICE_HOST
+
+MYSQL_PASSWORD=mysql
+RABBIT_PASSWORD=rabbit
+SERVICE_TOKEN=service
+SERVICE_PASSWORD=admin
+ADMIN_PASSWORD=admin
