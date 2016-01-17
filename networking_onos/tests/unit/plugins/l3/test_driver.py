@@ -17,14 +17,10 @@
 import copy
 import mock
 
-from oslotest import base
-
 from neutron.extensions import l3
 from neutron.tests.unit.api.v2 import test_base
 from neutron.tests.unit.extensions import base as test_neutron_extensions
 from webob import exc
-
-import networking_onos.plugins.l3.driver as onos_driver
 
 fake_tenant_id = '048aa98a3ec345dc8b14427c81e276cf'
 
@@ -72,9 +68,7 @@ fake_interface_remove = {'subnet_id': fake_subnet_id,
                          'port_id': fake_port_id}
 
 
-class ONOSL3PluginTestCase(base.BaseTestCase,
-                           test_neutron_extensions.ExtensionTestCase,
-                           onos_driver.ONOSL3Plugin):
+class ONOSL3PluginTestCase(test_neutron_extensions.ExtensionTestCase):
 
     def setUp(self):
         super(ONOSL3PluginTestCase, self).setUp()
