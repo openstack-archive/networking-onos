@@ -13,6 +13,7 @@
       License for the specific language governing permissions and limitations
       under the License.
 
+
       Convention for heading levels in Neutron devref:
       =======  Heading 0 (reserved for the title in a document)
       -------  Heading 1
@@ -21,16 +22,9 @@
       '''''''  Heading 4
       (Avoid deeper levels because they do not render well.)
 
-Welcome to networking-onos documentation!
-=========================================
-Networking-onos is Neutron's sub-project to provide connectivity between Neutron/Neutron's sub-project's and ONOS.
+Usage
+=====
 
-.. include:: ../../README.rst
+To use networking-onos in a project::
 
-Developer Docs
-==============
-
-.. toctree::
-   :maxdepth: 3
-
-   devref/index
+    import networking-onos

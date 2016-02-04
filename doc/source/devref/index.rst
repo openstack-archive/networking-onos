@@ -21,16 +21,33 @@
       '''''''  Heading 4
       (Avoid deeper levels because they do not render well.)
 
-Welcome to networking-onos documentation!
-=========================================
-Networking-onos is Neutron's sub-project to provide connectivity between Neutron/Neutron's sub-project's and ONOS.
+Developer Guide
+===============
 
-.. include:: ../../README.rst
+In the Developer Guide, you will find information on networking-onos's lower level programming APIs. There are sections that cover about the supported plug-ins and services.
 
-Developer Docs
-==============
+Programming HowTos and Tutorials
+--------------------------------
+.. toctree::
+    :maxdepth: 3
 
+    development.environment
+    usage
+    contribute
+
+Networking-onos Internals
+-------------------------
 .. toctree::
    :maxdepth: 3
 
-   devref/index
+   ml2_plugin
+   l3_plugin
+   sfc_driver
+   flowclassifier_driver
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

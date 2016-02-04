@@ -13,6 +13,7 @@
       License for the specific language governing permissions and limitations
       under the License.
 
+
       Convention for heading levels in Neutron devref:
       =======  Heading 0 (reserved for the title in a document)
       -------  Heading 1
@@ -21,16 +22,14 @@
       '''''''  Heading 4
       (Avoid deeper levels because they do not render well.)
 
-Welcome to networking-onos documentation!
-=========================================
-Networking-onos is Neutron's sub-project to provide connectivity between Neutron/Neutron's sub-project's and ONOS.
+Installation
+============
 
-.. include:: ../../README.rst
+At the command line::
 
-Developer Docs
-==============
+    $ pip install networking-onos
 
-.. toctree::
-   :maxdepth: 3
+Or, if you have virtualenvwrapper installed::
 
-   devref/index
+    $ mkvirtualenv networking-onos
+    $ pip install networking-onos
