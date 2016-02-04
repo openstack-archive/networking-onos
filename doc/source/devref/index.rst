@@ -24,7 +24,9 @@
 Developer Guide
 ===============
 
-In the Developer Guide, you will find information on networking-onos's lower level programming APIs. There are sections that cover about the supported plug-ins and services.
+In the Developer Guide, you will find information on networking-onos's
+lower level programming APIs. There are sections that cover about the
+supported plug-ins and services.
 
 Programming HowTos and Tutorials
 --------------------------------

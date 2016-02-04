@@ -24,11 +24,15 @@
 
 Service Function Chaining
 -------------------------
-ONOS implements `networking-sfc's port-chain api's <https://github.com/openstack/networking-sfc/blob/master/doc/source/api.rst>`_ for realizing service function chaining.
+ONOS implements `networking-sfc's port-chain api's
+<https://github.com/openstack/networking-sfc/blob/master/doc/source/api.rst>`_
+for realizing service function chaining.
 
 Mode of Working
 ~~~~~~~~~~~~~~~
-networking-onos provides a shim layer between ONOS and networking-sfc to realize service function chaining in ONOS. This shim layer makes the communication between ONOS and networking-sfc possible via ReST calls.
+networking-onos provides a shim layer between ONOS and networking-sfc to
+realize service function chaining in ONOS. This shim layer makes the
+communication between ONOS and networking-sfc possible via ReST calls.
 
 Usage
 ~~~~~

@@ -25,32 +25,25 @@
 
 ML2 Plugin
 ----------
-networking-onos provides a shim layer between ONOS and Neutron's ML2 framework to realize neutron's layer 2 network in ONOS. This shim layer makes the communication between ONOS and networking-sfc possible via ReST calls.
+networking-onos provides a shim layer between ONOS and Neutron's ML2 framework
+to realize neutron's layer 2 network in ONOS. This shim layer makes the
+communication between ONOS and networking-sfc possible via ReST calls.
 
 Mode of Working
 ~~~~~~~~~~~~~~~
-The networking-onos project provides a thin layer which makes the communication between ONOS and OpenStack neutron possible via ReST
+The networking-onos project provides a thin layer which makes the communication
+between ONOS and OpenStack neutron possible via ReST
 call.
 
 Usage
 ~~~~~
 To use networking-onos ML2 Plugin functionality, one should
 
-1. Make sure networking-onos code is installed.
+1. Install networking-onos.
 
-   Manual Installation::
+2. Configure ONOS as the required ML2 "mechanism_drivers" in "ml2_conf.ini"::
 
-    * Download networking-onos code from "https://github.com/openstack/networking-onos"
-    * Get inside networking-onos folder.
-    * Run "sudo python setup.py install"
-
-   Package Installation::
-
-    * Download the required package version from "https://pypi.python.org/pypi/networking-onos/"
-    * Install using pip.
-
-2. Configure ONOS as the required ML2 "mechanism_drivers" in "ml2_conf.ini".
-   mechanism_drivers=onos_ml2
+    mechanism_drivers=onos_ml2
 
 3. Configure ONOS credentials in networking_onos/etc/conf_onos.ini.
 

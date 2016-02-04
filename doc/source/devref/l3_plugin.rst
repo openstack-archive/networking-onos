@@ -24,32 +24,29 @@
 
 L3 Plugin
 ---------
-networking-onos provides a shim layer between ONOS and Neutron's L3 framewwork to realize neutron's layer 3 functionality in ONOS. This shim layer makes the communication between ONOS and networking-sfc possible via ReST calls.
+networking-onos provides a shim layer between ONOS and Neutron's L3 framework
+to realize neutron's layer 3 functionality in ONOS. This shim layer makes the
+communication between ONOS and networking-sfc possible via ReST calls.
 
 Mode of Working
 ~~~~~~~~~~~~~~~
-networking-onos.plugins.l3 provides a shim layer between ONOS and neutron for realizing neutron's router functionality in ONOS. This shim layer makes the communication between ONOS and OpenStack neutron possible via ReST calls.
+networking-onos.plugins.l3 provides a shim layer between ONOS and neutron for
+realizing neutron's router functionality in ONOS. This shim layer makes the
+communication between ONOS and OpenStack neutron possible via ReST calls.
 
 Usage
 ~~~~~
 To use networking-onos L3 Plugin functionality, one should
 
-1. Make sure networking-onos code is installed.
+1. Install networking-onos.
 
-   Manual Installation::
+2. Configure ONOS as the required L3 service plugin in "neutron.conf"::
 
-    * Download networking-onos code from "https://github.com/openstack/networking-onos"
-    * Get inside networking-onos folder.
-    * Run "sudo python setup.py install"
+    service_plugins = networking_onos.plugins.l3.driver:ONOSL3Plugin
 
-   Package Installation::
+3. Configure ONOS credentials in networking_onos/etc/conf_onos.ini.
 
-    * Download the required package version from "https://pypi.python.org/pypi/networking-onos/"
-    * Install using pip.
-
-2. Configure ONOS credentials in networking_onos/etc/conf_onos.ini.
-
-3. Start neutron server mentioning networking_onos/etc/conf_onos.ini as one of the config-file.
+4. Start neutron server mentioning networking_onos/etc/conf_onos.ini as one of the config-file.
 
 Code
 ~~~~

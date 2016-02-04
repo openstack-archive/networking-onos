@@ -24,11 +24,16 @@
 
 Flow Classifier
 ---------------
-ONOS implements `networking-sfc's flow-classifier api's <https://github.com/openstack/networking-sfc/blob/master/doc/source/api.rst>`_ for realizing traffic classification for service function chaining.
+ONOS implements `networking-sfc's flow-classifier api's
+<https://github.com/openstack/networking-sfc/blob/master/doc/source/api.rst>`_
+for realizing traffic classification for service function chaiing.
 
 Mode of Working
 ~~~~~~~~~~~~~~~
-networking-onos provides a shim layer between ONOS and networking-sfc to realize flow classification for sevice function chaining in ONOS. This shim layer makes the communication between ONOS and networking-sfc possible via ReST calls.
+networking-onos provides a shim layer between ONOS and networking-sfc to
+realize flow classification for sevice function chaining in ONOS. This shim
+layer makes the communication between ONOS and networking-sfc possible via
+ReST calls.
 
 Usage
 ~~~~~

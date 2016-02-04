@@ -23,7 +23,8 @@
 
 Welcome to networking-onos documentation!
 =========================================
-Networking-onos is Neutron's sub-project to provide connectivity between Neutron/Neutron's sub-project's and ONOS.
+Networking-onos is Neutron's sub-project to provide connectivity between
+Neutron/Neutron's sub-project's and ONOS.
 
 .. include:: ../../README.rst
 
