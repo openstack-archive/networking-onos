@@ -1,0 +1,42 @@
+Metadata-Version: 1.1
+Name: networking-onos
+Version: 2016.1.0
+Summary: OpenStack Networking
+Home-page: http://www.openstack.org/
+Author: OpenStack
+Author-email: openstack-dev@lists.openstack.org
+License: UNKNOWN
+Description: Word about ONOS
+        ---------------
+        
+        Open Networking Operating System (ONOS) is a new carrier-grade SDN network
+        operating system designed for high availability, performance and scale-out
+        with a mission::
+        
+            "to produce the Open Source Network Operating System that will enable
+             service providers to build real Software Defined Network (SDN)"
+        
+        Word about networking-onos
+        --------------------------
+        The `networking-onos repository <https://github.com/openstack/networking-onos>`_
+        contains code which makes the interaction between ONOS and OpenStack Neutron
+        possible. For more information visit `ONOS <http://onosproject.org/>`_ and
+        `Neutron <https://launchpad.net/neutron/>`_ projects.
+        
+        Important Pointers
+        ------------------
+        * For latest updates, visit `project page <https://launchpad.net/networking-onos>`_.
+        * Report bugs or new requirement(s) on the `bug page <https://bugs.launchpad.net/networking-onos>`_.
+        * Any contribution is appreciated.
+        * Start contributing and enjoy ;)
+        
+        
+Platform: UNKNOWN
+Classifier: Environment :: OpenStack
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7

@@ -47,3 +47,13 @@ To build your specific debian package, one can follow below steps::
 * Built packages will be generated inside networking-onos folder.
 * Refer to https://www.debian.org/doc/manuals/maint-guide/build.en.html for details.
 
+RPM
+---
+
+To build your specific rpm package, one can follow below steps::
+
+* Change code
+* Execute "rpm-packaging.sh" present inside networking-onos/package/rpm folder.
+* Built packages will be generated inside networking-onos/package/rpm folder.
+* Refer to https://en.wikipedia.org/wiki/RPM_Package_Manager for details.
+
