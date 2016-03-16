@@ -33,3 +33,17 @@ Or, if you have virtualenvwrapper installed::
 
     $ mkvirtualenv networking-onos
     $ pip install networking-onos
+
+Packaging
+=========
+
+Debian
+------
+
+To build your specific debian package, one can follow below steps::
+
+* Change code
+* Execute "dpkg-buildpackage -us -uc" inside networking-onos/package folder.
+* Built packages will be generated inside networking-onos folder.
+* Refer to https://www.debian.org/doc/manuals/maint-guide/build.en.html for details.
+
