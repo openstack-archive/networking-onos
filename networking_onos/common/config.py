@@ -15,6 +15,8 @@
 
 from oslo_config import cfg
 
+from networking_onos._i18n import _
+
 ONOS_DRIVER_OPTS = [
     cfg.StrOpt('url_path',
                default='',
