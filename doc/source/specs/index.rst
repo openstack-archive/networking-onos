@@ -21,29 +21,13 @@
       '''''''  Heading 4
       (Avoid deeper levels because they do not render well.)
 
-Developer Guide
-===============
+Specification
+=============
 
-In the Developer Guide, you will find information on networking-onos's
-lower level programming APIs. There are sections that cover about the
-supported plug-ins and services.
-
-Programming HowTos and Tutorials
---------------------------------
+Mitaka
+------
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
-    development.environment
-    usage
-    contribute
-
-Networking-onos Internals
--------------------------
-.. toctree::
-   :maxdepth: 3
-
-   ml2_plugin
-   l3_plugin
-   sfc_driver
-   flowclassifier_driver
+    sfc_driver
 
