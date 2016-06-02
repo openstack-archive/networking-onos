@@ -1,12 +1,13 @@
 # Add here any global default values that apply for any ONOS release
-# -----------------------------------------------------------------
+# ------------------------------------------------------------------
 
 # What release to use. Choices are:
 #
 #   emu
+#   falcon
 #   master
 
-ONOS_RELEASE=${ONOS_RELEASE:-emu}
+ONOS_RELEASE=${ONOS_RELEASE:-falcon}
 
 # The IP address of ONOS. Set this in local.conf.
 ONOS_MGR_IP=${ONOS_MGR_IP:-$SERVICE_HOST}
