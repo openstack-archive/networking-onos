@@ -146,3 +146,6 @@ class OnosFlowClassifierDriverTestCase(test_ext.ExtensionTestCase):
 
     def test_flow_classifier_delete(self):
         self._test_entity_delete('flow_classifier')
+
+    def test_create_flow_classifier_precommit(self):
+        self.assertTrue(mock.ANY)

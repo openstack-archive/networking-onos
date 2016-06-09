@@ -17,6 +17,7 @@ from oslo_config import cfg
 from oslo_log import helpers as log_helpers
 from oslo_log import log as logging
 
+from networking_onos._i18n import _LI
 from networking_onos.common import config  # noqa
 from networking_onos.common import utils as onos_utils
 
@@ -58,3 +59,7 @@ class OnosFlowClassifierDriver(fc_driver.FlowClassifierDriverBase):
         entity_path = 'flow_classifiers/' + context.current['id']
         onos_utils.send_msg(self.onos_path, self.onos_auth, 'delete',
                             entity_path)
+
+    @log_helpers.log_method_call
+    def create_flow_classifier_precommit(self, context):
+        LOG.info(_LI("Skipping precommit check."))
