@@ -35,3 +35,4 @@ Developer Docs
    :maxdepth: 3
 
    devref/index
+   specs/index
