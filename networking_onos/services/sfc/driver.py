@@ -15,14 +15,11 @@
 
 from oslo_config import cfg
 from oslo_log import helpers as log_helpers
-from oslo_log import log as logging
 
 from networking_onos.common import config  # noqa
 from networking_onos.common import utils as onos_utils
 
 from networking_sfc.services.sfc.drivers import base as sfc_driver
-
-LOG = logging.getLogger(__name__)
 
 
 class OnosSfcDriver(sfc_driver.SfcDriverBase):
