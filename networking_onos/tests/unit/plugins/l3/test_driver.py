@@ -32,8 +32,7 @@ fake_router_object = {'router': {'name': 'router_abc',
 
 fake_network_id = '7464aaf0-27ea-448a-97df-51732f9e0e27'
 fake_router_external_info = {'external_gateway_info':
-                             {'network_id': fake_network_id,
-                              'enable_snat': False}}
+                             {'network_id': fake_network_id}}
 
 fake_floating_ip_id = '7464aaf0-27ea-448a-97df-51732f9e0e25'
 fake_floating_ip = {'floatingip':
