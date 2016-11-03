@@ -23,12 +23,14 @@ from neutron.tests.unit.extensions import base as test_neutron_extensions
 from webob import exc
 
 fake_tenant_id = '048aa98a3ec345dc8b14427c81e276cf'
+fake_project_id = '048aa98a3ec345dc8b14427c81e276cf'
 
 fake_router_uuid = '292f7967-c5e7-47d8-8265-dc2160678b75'
 fake_router_object = {'router': {'name': 'router_abc',
                                  'external_gateway_info': None,
                                  'admin_state_up': True,
-                                 'tenant_id': fake_tenant_id}}
+                                 'tenant_id': fake_tenant_id,
+                                 'project_id': fake_project_id}}
 
 fake_network_id = '7464aaf0-27ea-448a-97df-51732f9e0e27'
 fake_router_external_info = {'external_gateway_info':
@@ -41,7 +43,8 @@ fake_floating_ip = {'floatingip':
                      'router_id': fake_router_uuid,
                      'port_id': None,
                      'status': None,
-                     'tenant_id': fake_tenant_id}}
+                     'tenant_id': fake_tenant_id,
+                     'project_id': fake_project_id}}
 
 fake_port_id = '7db560e9-76d4-4bf9-9c28-43efa7afa45d'
 fake_subnet_id = 'dc2b8071-c24c-4a8e-b471-dbf3fbe55830'
@@ -59,7 +62,8 @@ fake_floating_ip_update_info = {'floating_network_id': fake_network_id,
                                 'fixed_ip_address': '20.1.1.11',
                                 'subnet_id': fake_port['subnets'][0]['id'],
                                 'port_id': fake_port_id,
-                                'floating_ip_address': '198.1.2.3'}
+                                'floating_ip_address': '198.1.2.3',
+                                'project_id': fake_project_id}
 
 fake_interface_add = {'subnet_id': fake_subnet_id}
 

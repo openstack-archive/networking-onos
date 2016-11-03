@@ -32,6 +32,9 @@ PORT_PAIR_PATH = (sfc_ext.SFC_PREFIX[1:] + '/port_pairs')
 PORT_PAIR_GROUP_PATH = (sfc_ext.SFC_PREFIX[1:] + '/port_pair_groups')
 fmt = 'json'
 
+fake_tenant_id = '048aa98a3ec345dc8b14427c81e276cf'
+fake_project_id = '048aa98a3ec345dc8b14427c81e276cf'
+
 
 class OnosSfcDriverTestCase(test_ext.ExtensionTestCase):
     def setUp(self):
@@ -52,18 +55,21 @@ class OnosSfcDriverTestCase(test_ext.ExtensionTestCase):
             'name': data['port_chain'].get('name') or '',
             'port_pair_groups': data['port_chain']['port_pair_groups'],
             'chain_parameters': data['port_chain'].get(
-                'chain_parameters') or {'correlation': 'mpls'},
+                'chain_parameters') or {'correlation': 'mpls',
+                                        'symmetric': False},
             'flow_classifiers': data['port_chain'].get(
                 'flow_classifiers') or [],
-            'tenant_id': data['port_chain']['tenant_id']
+            'chain_id': 0,
+            'tenant_id': data['port_chain']['tenant_id'],
+            'project_id': data['port_chain']['tenant_id']
         }}
 
     def test_create_port_chain(self):
         portchain_id = _uuid()
         data = {'port_chain': {
             'port_pair_groups': [_uuid()],
-            'tenant_id': _uuid()
-        }}
+            'tenant_id': _uuid(),
+            }}
         expected_data = self._get_expected_port_chain(data)
         return_value = copy.copy(expected_data['port_chain'])
         return_value.update({'id': portchain_id})
@@ -110,7 +116,9 @@ class OnosSfcDriverTestCase(test_ext.ExtensionTestCase):
             'description': data['port_pair_group'].get('description') or '',
             'name': data['port_pair_group'].get('name') or '',
             'port_pairs': data['port_pair_group'].get('port_pairs') or [],
-            'tenant_id': data['port_pair_group']['tenant_id']
+            'port_pair_group_parameters': {'lb_fields': []},
+            'tenant_id': data['port_pair_group']['tenant_id'],
+            'project_id': data['port_pair_group']['tenant_id']
         }}
 
     def test_create_port_pair_group(self):
@@ -169,16 +177,19 @@ class OnosSfcDriverTestCase(test_ext.ExtensionTestCase):
             'ingress': data['port_pair']['ingress'],
             'egress': data['port_pair']['egress'],
             'service_function_parameters': data['port_pair'].get(
-                'service_function_parameters') or {'correlation': None},
-            'tenant_id': data['port_pair']['tenant_id']
+                'service_function_parameters') or {'weight': 1,
+                                                   'correlation': None},
+            'tenant_id': data['port_pair']['tenant_id'],
+            'project_id': data['port_pair']['tenant_id']
         }}
 
     def test_create_port_pair(self):
+
         portpair_id = _uuid()
         data = {'port_pair': {
             'ingress': _uuid(),
             'egress': _uuid(),
-            'tenant_id': _uuid()
+            'tenant_id': _uuid(),
         }}
         expected_data = self._get_expected_port_pair(data)
         return_value = copy.copy(expected_data['port_pair'])

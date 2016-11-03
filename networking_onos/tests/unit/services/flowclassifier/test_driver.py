@@ -69,6 +69,7 @@ class OnosFlowClassifierDriverTestCase(test_ext.ExtensionTestCase):
             'name': data['flow_classifier'].get('name') or '',
             'description': data['flow_classifier'].get('description') or '',
             'tenant_id': data['flow_classifier']['tenant_id'],
+            'project_id': data['flow_classifier']['tenant_id'],
             'source_port_range_min': source_port_range_min,
             'source_port_range_max': source_port_range_max,
             'destination_port_range_min': destination_port_range_min,
