@@ -224,4 +224,4 @@ class ONOSL3PluginTestCase(test_neutron_extensions.ExtensionTestCase):
             self.assertEqual(resource['admin_state_up'], True)
         elif context == 'floatingip':
             self.assertEqual(resource['status'], 'ACTIVE')
-            self.assertEqual(resource['fixed_ip_address'], None)
+            self.assertIsNone(resource['fixed_ip_address'])

@@ -22,6 +22,8 @@ from neutron.extensions import portbindings
 from neutron.plugins.common import constants
 from neutron.plugins.ml2 import driver_api as api
 
+from networking_onos.extensions import securitygroup
+
 from networking_onos.common import config  # noqa
 from networking_onos.common import utils as onos_utils
 
@@ -42,9 +44,9 @@ class ONOSMechanismDriver(api.MechanismDriver):
         self.vif_details = {portbindings.CAP_PORT_FILTER: True}
 
     def initialize(self):
-        # No action required as of now. Can be extended in
-        # the future if required.
-        pass
+        LOG.debug("Initializing security group handler")
+        sgDriver = securitygroup.SecurityGroupDriver()
+        sgDriver.initialize()
 
     @log_helpers.log_method_call
     def create_network_postcommit(self, context):
