@@ -45,9 +45,10 @@ To use networking-onos ML2 Plugin functionality, one should
 
     mechanism_drivers=onos_ml2
 
-3. Configure ONOS credentials in networking_onos/etc/conf_onos.ini.
+3. Configure ONOS credentials in etc/neutron/plugins/ml2/ml2_conf_onos.ini.
 
-4. Start neutron server mentioning networking_onos/etc/conf_onos.ini as one of the config-file.
+4. Start neutron server mentioning etc/neutron/plugins/ml2/ml2_conf_onos.ini as
+one of the config-file.
 
 Code
 ~~~~

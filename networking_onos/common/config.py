@@ -17,7 +17,8 @@ from oslo_config import cfg
 
 from networking_onos._i18n import _
 
-ONOS_DRIVER_OPTS = [
+
+onos_opts = [
     cfg.StrOpt('url_path',
                default='',
                help=_('ONOS ReST interface URL')),
@@ -30,4 +31,8 @@ ONOS_DRIVER_OPTS = [
                help=_('Password for authentication.'))
 ]
 
-cfg.CONF.register_opts(ONOS_DRIVER_OPTS, "onos")
+cfg.CONF.register_opts(onos_opts, "onos")
+
+
+def list_opts():
+    return [('onos', onos_opts)]

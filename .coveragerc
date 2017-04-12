@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = networking_onos
+omit = networking_onos/tests/*
+
+[report]
+ignore_errors = True

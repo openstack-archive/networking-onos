@@ -42,24 +42,17 @@ Manual method
 +++++++++++++
 1. Download and install networking-onos.
 
-2. Download and install networking-sfc after updating networking-sfc's setup.cfg with onos driver information::
-
-    networking_sfc.sfc.drivers =
-        onos = networking_onos.services.sfc.driver:OnosSfcDriver
+2. Download and install networking-sfc.
 
 3. Enable Sfc service plugin in neutron.
 
 Devstack method
 +++++++++++++++
-1. Update networking-sfc's setup.cfg with onos driver information::
+1. Update [[local|localrc]] with
+   ::
 
-    networking_sfc.sfc.drivers =
-        onos = networking_onos.services.sfc.driver:OnosSfcDriver
-
-2. Update [[local|localrc]] with::
-
-    enable_plugin networking-sfc git://git.openstack.org/openstack/networking-sfc
-    enable_plugin networking-onos git://git.openstack.org/openstack/networking-onos
+     enable_plugin networking-sfc git://git.openstack.org/openstack/networking-sfc
+     enable_plugin networking-onos git://git.openstack.org/openstack/networking-onos
 
 3. run ./stack.sh
 

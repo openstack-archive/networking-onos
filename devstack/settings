@@ -39,7 +39,7 @@ case $ONOS_MODE in
         enable_service onos-server onos-compute
         ;;
     externalonos)
-        enable_service onos-neutron onos-compute
+        enable_service onos-neutron
         ;;
     compute)
         enable_service onos-compute

@@ -3,10 +3,7 @@
 # Add <file or directory> to the black list. It should be a base name, not a
 # path. You may set this option multiple times.
 #
-# Note the 'openstack' below is intended to match only
-# neutron.openstack.common.  If we ever have another 'openstack'
-# dirname, then we'll need to expand the ignore features in pylint :/
-ignore=.git,tests,openstack
+ignore=.git,tests
 
 [MESSAGES CONTROL]
 # NOTE(gus): This is a long list.  A number of these are important and
@@ -19,19 +16,11 @@ disable=
  locally-disabled,
 # "E" Error for important programming issues (likely bugs)
  access-member-before-definition,
- bad-super-call,
- maybe-no-member,
  no-member,
  no-method-argument,
  no-self-argument,
- not-callable,
- no-value-for-parameter,
- super-on-old-class,
- too-few-format-args,
 # "W" Warnings for stylistic problems or minor programming issues
  abstract-method,
- anomalous-backslash-in-string,
- anomalous-unicode-escape-in-string,
  arguments-differ,
  attribute-defined-outside-init,
  bad-builtin,
@@ -39,25 +28,18 @@ disable=
  broad-except,
  dangerous-default-value,
  deprecated-lambda,
- duplicate-key,
  expression-not-assigned,
  fixme,
  global-statement,
- global-variable-not-assigned,
- logging-not-lazy,
  no-init,
  non-parent-init-called,
  protected-access,
  redefined-builtin,
  redefined-outer-name,
- redefine-in-handler,
  signature-differs,
  star-args,
  super-init-not-called,
- unnecessary-lambda,
- unnecessary-pass,
  unpacking-non-sequence,
- unreachable,
  unused-argument,
  unused-import,
  unused-variable,
@@ -65,7 +47,6 @@ disable=
  bad-continuation,
  invalid-name,
  missing-docstring,
- old-style-class,
  superfluous-parens,
 # "R" Refactor recommendations
  abstract-class-little-used,
@@ -118,7 +99,7 @@ ignore-iface-methods=
 [IMPORTS]
 # Deprecated modules which should not be used, separated by a comma
 deprecated-modules=
-# should use openstack.common.jsonutils
+# should use oslo_serialization.jsonutils
  json
 
 [TYPECHECK]

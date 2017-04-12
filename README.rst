@@ -2,8 +2,8 @@ Word about ONOS
 ---------------
 
 Open Networking Operating System (ONOS) is a new carrier-grade SDN network
-operating system designed for high availability, performance and scale-out
-with a mission::
+operating system designed for high availability, performance and scale-out with
+a mission::
 
     "to produce the Open Source Network Operating System that will enable
      service providers to build real Software Defined Network (SDN)"

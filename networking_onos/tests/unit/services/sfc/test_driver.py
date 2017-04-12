@@ -69,7 +69,7 @@ class OnosSfcDriverTestCase(test_ext.ExtensionTestCase):
         data = {'port_chain': {
             'port_pair_groups': [_uuid()],
             'tenant_id': _uuid(),
-            }}
+        }}
         expected_data = self._get_expected_port_chain(data)
         return_value = copy.copy(expected_data['port_chain'])
         return_value.update({'id': portchain_id})

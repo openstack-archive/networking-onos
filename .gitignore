@@ -8,12 +8,15 @@ dist/
 doc/build
 *.DS_Store
 *.pyc
+etc/neutron/plugins/ml2/ml2_conf_onos.ini.sample
 networking_onos.egg-info/
 networking_onos/vcsversion.py
 networking_onos/versioninfo
 pbr*.egg/
 run_tests.err.log
 run_tests.log
+# Files create dy releasenotes build
+releasenotes/build
 setuptools*.egg/
 subunit.log
 *.mo
@@ -26,6 +29,3 @@ subunit.log
 !/.mailmap
 !/.pylintrc
 !/.testr.conf
-
-# Files created by releasenotes build
-releasenotes/build

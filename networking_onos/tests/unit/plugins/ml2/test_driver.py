@@ -20,10 +20,10 @@ from oslo_config import cfg
 from oslo_serialization import jsonutils
 from oslotest import base
 
-from neutron.common import constants as n_const
 from neutron.plugins.common import constants
 from neutron.plugins.ml2 import driver_api as api
 from neutron.plugins.ml2 import driver_context as ctx
+from neutron_lib import constants as n_const
 
 import networking_onos.plugins.ml2.driver as onos_ml2_driver
 

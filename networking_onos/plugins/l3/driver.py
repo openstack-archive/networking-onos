@@ -18,15 +18,14 @@ from oslo_config import cfg
 
 from neutron.api.rpc.agentnotifiers import l3_rpc_agent_api
 from neutron.api.rpc.handlers import l3_rpc
-from neutron.common import constants as q_const
 from neutron.common import rpc as n_rpc
 from neutron.common import topics
 from neutron.db import extraroute_db
 from neutron.db import l3_agentschedulers_db
 from neutron.db import l3_gwmode_db
-from neutron.plugins.common import constants
+from neutron_lib import constants as q_const
 
-from networking_onos.common import config   # noqa
+from networking_onos.common import config  # noqa
 from networking_onos.plugins.l3 import floating_ip as onos_fip
 from networking_onos.plugins.l3 import router as onos_router
 
@@ -66,7 +65,7 @@ class ONOSL3Plugin(common_db_mixin.CommonDbMixin,
         self.conn.consume_in_threads()
 
     def get_plugin_type(self):
-        return constants.L3_ROUTER_NAT
+        return q_const.L3_ROUTER_NAT
 
     def get_plugin_description(self):
         """returns plug-in description"""
