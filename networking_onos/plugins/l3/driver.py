@@ -65,7 +65,7 @@ class ONOSL3Plugin(common_db_mixin.CommonDbMixin,
         self.conn.consume_in_threads()
 
     def get_plugin_type(self):
-        return q_const.L3_ROUTER_NAT
+        return q_const.L3
 
     def get_plugin_description(self):
         """returns plug-in description"""
