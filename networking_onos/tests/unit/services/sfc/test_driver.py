@@ -116,7 +116,10 @@ class OnosSfcDriverTestCase(test_ext.ExtensionTestCase):
             'description': data['port_pair_group'].get('description') or '',
             'name': data['port_pair_group'].get('name') or '',
             'port_pairs': data['port_pair_group'].get('port_pairs') or [],
-            'port_pair_group_parameters': {'lb_fields': []},
+            'port_pair_group_parameters': {'ppg_n_tuple_mapping':
+                                           {'ingress_n_tuple': {},
+                                            'egress_n_tuple': {}},
+                                           'lb_fields': []},
             'tenant_id': data['port_pair_group']['tenant_id'],
             'project_id': data['port_pair_group']['tenant_id']
         }}

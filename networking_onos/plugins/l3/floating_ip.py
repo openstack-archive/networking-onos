@@ -13,6 +13,8 @@
 #  under the License.
 #
 
+from neutron.common import constants
+
 from networking_onos.common import utils as onos_utils
 
 
@@ -31,6 +33,11 @@ class ONOSFloatingIP(object):
                                  {'floatingip': fip_dict})
 
     def handle_update_floatingip(self, id, fip_dict):
+        if fip_dict.get('port_id') is None:
+            fip_dict['status'] = constants.FLOATINGIP_STATUS_DOWN
+        else:
+            fip_dict['status'] = constants.FLOATINGIP_STATUS_ACTIVE
+
         url_path = 'floatingips' + '/' + id
         self.send_floatingip_msg('put', url_path,
                                  {'floatingip': fip_dict})
