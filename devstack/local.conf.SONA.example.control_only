@@ -1,0 +1,41 @@
+[[local|localrc]]
+HOST_IP=10.134.231.28
+SERVICE_HOST=10.134.231.28
+RABBIT_HOST=10.134.231.28
+DATABASE_HOST=10.134.231.28
+Q_HOST=10.134.231.28
+ 
+ADMIN_PASSWORD=nova
+DATABASE_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+SERVICE_TOKEN=$ADMIN_PASSWORD
+ 
+DATABASE_TYPE=mysql
+ 
+# Log
+USE_SCREEN=True
+SCREEN_LOGDIR=/opt/stack/logs/screen
+LOGFILE=/opt/stack/logs/xstack.sh.log
+LOGDAYS=1
+# Images
+FORCE_CONFIG_DRIVE=True
+ 
+# Networks
+Q_ML2_TENANT_NETWORK_TYPE=vxlan
+Q_ML2_PLUGIN_MECHANISM_DRIVERS=onos_ml2
+Q_ML2_PLUGIN_TYPE_DRIVERS=flat,vlan,vxlan
+ML2_L3_PLUGIN=onos_router
+NEUTRON_CREATE_INITIAL_NETWORKS=False
+enable_plugin networking-onos https://github.com/openstack/networking-onos.git stable/ocata
+ONOS_MODE=controller_only
+ 
+# Services
+ENABLED_SERVICES=key,nova,n-api,n-cond,n-sch,n-novnc,n-cauth,placement-api,g-api,g-reg,q-svc,horizon,rabbit,mysql
+  
+# Branches
+GLANCE_BRANCH=stable/ocata
+HORIZON_BRANCH=stable/ocata
+KEYSTONE_BRANCH=stable/ocata
+NEUTRON_BRANCH=stable/ocata
+NOVA_BRANCH=stable/ocata
