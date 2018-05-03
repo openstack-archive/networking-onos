@@ -20,6 +20,7 @@ source $NETWORKING_ONOS_DIR/devstack/functions
 
 # Import bridge data
 source $TOP_DIR/lib/neutron_plugins/ovs_base
+source $TOP_DIR/lib/neutron_plugins/openvswitch_agent
 
 # Import ONOS settings
 source $NETWORKING_ONOS_DIR/devstack/settings.onos
@@ -71,11 +72,11 @@ if is_service_enabled onos-compute; then
         install_onos_compute
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then
         if is_service_enabled nova; then
-            create_nova_conf_neutron
+            configure_neutron_nova_new
         fi
-        bind_onos_controller
+        # bind_onos_controller
         # ONOS vtn will create $OVS_BR
-        wait_for_active_bridge $OVS_BR $ONOS_RETRY_SLEEP_INTERVAL $ONOS_BOOT_WAIT
+        # wait_for_active_bridge $OVS_BR $ONOS_RETRY_SLEEP_INTERVAL $ONOS_BOOT_WAIT
     elif [[ "$1" == "stack" && "$2" == "extra" ]]; then
         # no-op
         :
