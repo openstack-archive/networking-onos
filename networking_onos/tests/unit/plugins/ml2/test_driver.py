@@ -20,10 +20,9 @@ from oslo_config import cfg
 from oslo_serialization import jsonutils
 from oslotest import base
 
-from neutron.plugins.common import constants
-from neutron.plugins.ml2 import driver_api as api
 from neutron.plugins.ml2 import driver_context as ctx
 from neutron_lib import constants as n_const
+from neutron_lib.plugins.ml2 import api
 
 import networking_onos.plugins.ml2.driver as onos_ml2_driver
 
@@ -190,13 +189,13 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
     # given valid  and invalid segments
     valid_segment = {
         api.ID: 'API_ID',
-        api.NETWORK_TYPE: constants.TYPE_LOCAL,
+        api.NETWORK_TYPE: n_const.TYPE_LOCAL,
         api.SEGMENTATION_ID: 'API_SEGMENTATION_ID',
         api.PHYSICAL_NETWORK: 'API_PHYSICAL_NETWORK'}
 
     invalid_segment = {
         api.ID: 'API_ID',
-        api.NETWORK_TYPE: constants.TYPE_NONE,
+        api.NETWORK_TYPE: n_const.TYPE_NONE,
         api.SEGMENTATION_ID: 'API_SEGMENTATION_ID',
         api.PHYSICAL_NETWORK: 'API_PHYSICAL_NETWORK'}
 
@@ -204,9 +203,9 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
         """Validate the check_segment method."""
 
         # given driver and all network types
-        all_network_types = [constants.TYPE_FLAT, constants.TYPE_GRE,
-                             constants.TYPE_LOCAL, constants.TYPE_VXLAN,
-                             constants.TYPE_VLAN, constants.TYPE_NONE]
+        all_network_types = [n_const.TYPE_FLAT, n_const.TYPE_GRE,
+                             n_const.TYPE_LOCAL, n_const.TYPE_VXLAN,
+                             n_const.TYPE_VLAN, n_const.TYPE_NONE]
 
         # when checking segments network type
         valid_types = {network_type
@@ -214,8 +213,8 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
                        if self.check_segment({api.NETWORK_TYPE: network_type})}
 
         # then true is returned only for valid network types
-        self.assertEqual({constants.TYPE_LOCAL, constants.TYPE_GRE,
-                          constants.TYPE_VXLAN, constants.TYPE_VLAN},
+        self.assertEqual({n_const.TYPE_LOCAL, n_const.TYPE_GRE,
+                          n_const.TYPE_VXLAN, n_const.TYPE_VLAN},
                          valid_types)
 
     def test_bind_port(self):

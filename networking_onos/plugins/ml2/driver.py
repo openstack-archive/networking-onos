@@ -17,10 +17,9 @@ from oslo_config import cfg
 from oslo_log import helpers as log_helpers
 from oslo_log import log as logging
 
-from neutron.plugins.common import constants
-from neutron.plugins.ml2 import driver_api as api
 from neutron_lib.api.definitions import portbindings
 from neutron_lib import constants as n_const
+from neutron_lib.plugins.ml2 import api
 
 from networking_onos.extensions import securitygroup
 
@@ -136,7 +135,7 @@ class ONOSMechanismDriver(api.MechanismDriver):
     def check_segment(self, segment):
         """Check whether segment is valid for the ONOS MechanismDriver."""
 
-        return segment[api.NETWORK_TYPE] in [constants.TYPE_LOCAL,
-                                             constants.TYPE_GRE,
-                                             constants.TYPE_VXLAN,
-                                             constants.TYPE_VLAN]
+        return segment[api.NETWORK_TYPE] in [n_const.TYPE_LOCAL,
+                                             n_const.TYPE_GRE,
+                                             n_const.TYPE_VXLAN,
+                                             n_const.TYPE_VLAN]
