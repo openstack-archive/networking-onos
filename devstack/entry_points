@@ -59,6 +59,8 @@ function configure_neutron_onos {
     populate_ml2_config /$Q_PLUGIN_CONF_FILE onos url_path=$ONOS_ENDPOINT
     populate_ml2_config /$Q_PLUGIN_CONF_FILE onos username=$ONOS_USERNAME
     populate_ml2_config /$Q_PLUGIN_CONF_FILE onos password=$ONOS_PASSWORD
+
+    neutron_server_config_add /opt/stack/networking-onos/etc/conf_onos.ini
 }
 
 

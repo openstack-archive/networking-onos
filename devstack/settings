@@ -44,4 +44,7 @@ case $ONOS_MODE in
     compute)
         enable_service onos-compute
         ;;
+    controller_only)
+        enable_service onos-neutron
+        ;;
 esac
