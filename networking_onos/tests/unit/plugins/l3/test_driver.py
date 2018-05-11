@@ -20,6 +20,7 @@ import mock
 from neutron.extensions import l3
 from neutron.tests.unit.api.v2 import test_base
 from neutron.tests.unit.extensions import base as test_neutron_extensions
+from neutron_lib.api.definitions import l3 as l3_apidef
 from neutron_lib import constants
 
 from webob import exc
@@ -78,7 +79,7 @@ class ONOSL3PluginTestCase(test_neutron_extensions.ExtensionTestCase):
         super(ONOSL3PluginTestCase, self).setUp()
         self._setUpExtension(
             'neutron.services.l3_router.l3_router_plugin.L3RouterPlugin',
-            constants.L3, l3.RESOURCE_ATTRIBUTE_MAP,
+            constants.L3, l3_apidef.RESOURCE_ATTRIBUTE_MAP,
             l3.L3, '', allow_pagination=True, allow_sorting=True,
             supported_extension_aliases=['router'],
             use_quota=True)
@@ -148,36 +149,88 @@ class ONOSL3PluginTestCase(test_neutron_extensions.ExtensionTestCase):
         self._verify_resp(resp, exc.HTTPCreated.code,
                           'floatingip', fake_floating_ip_id)
 
-    def test_update_floating_ip(self):
-        fake_floating_ip_update_info = {'port_id': None}
-        floatingip_info = copy.deepcopy(fake_floating_ip['floatingip'])
-        floatingip_info.update(fake_floating_ip_update_info)
-        floatingip_info.update({'status': 'ACTIVE',
-                                'tenant_id': fake_tenant_id,
-                                'floating_network_id': fake_network_id,
-                                'fixed_ip_address': None,
-                                'floating_ip_address': '172.24.4.228'})
+    @staticmethod
+    def _get_port_test():
+        port_id = "3a44f4e5-1694-493a-a1fb-393881c673a4"
+        subnet_id = "a2f1f29d-571b-4533-907f-5803ab96ead1"
+        port = {'id': port_id,
+                'network_id': "84b126bb-f45e-4b2e-8202-7e5ce9e21fe7",
+                'fixed_ips': [{'ip_address': '19.4.4.4',
+                               'prefixlen': 24,
+                               'subnet_id': subnet_id}],
+                'subnets': [{'id': subnet_id,
+                             'cidr': '19.4.4.0/24',
+                             'gateway_ip': '19.4.4.1'}]}
+        return port_id, port
 
-        self.instance.update_floatingip.return_value = floatingip_info
-        self.instance.get_port = mock.Mock(return_value=fake_port)
-        floating_ip_request = {'floatingip': fake_floating_ip_update_info}
-        url = test_base._get_path('floatingips',
-                                  id=fake_floating_ip_id, fmt=self.fmt)
-        resp = self._test_send_msg(floating_ip_request, 'put', url)
-        self.instance.update_floatingip.\
+    @staticmethod
+    def _get_floating_ip_test():
+        floating_ip_id = "e4997650-6a83-4230-950a-8adab8e524b2"
+        floating_ip = {
+            "floatingip": {"fixed_ip_address": None,
+                           "floating_ip_address": None,
+                           "floating_network_id": None,
+                           "id": floating_ip_id,
+                           "router_id": "d23abc8d-2991-4a55-ba98-2aaea84cc72",
+                           "port_id": None,
+                           "status": None,
+                           "tenant_id": "test-tenant"
+                           }
+        }
+        return floating_ip_id, floating_ip
+
+    def test_update_floating_ip(self):
+        floating_ip_id, floating_ip = self._get_floating_ip_test()
+
+        floating_ip_request_info = {"port_id": None}
+
+        return_value = copy.deepcopy(floating_ip['floatingip'])
+        return_value.update(floating_ip_request_info)
+        return_value.update({"status": "ACTIVE",
+                             "tenant_id": "test-tenant",
+                             "floating_network_id":
+                                 "376da547-b977-4cfe-9cba-275c80debf57",
+                             "fixed_ip_address": None,
+                             "floating_ip_address": "172.24.4.228"
+                             })
+
+        instance = self.plugin.return_value
+        instance.get_floatingip = mock.Mock(return_value=floating_ip)
+        instance.update_floatingip.return_value = return_value
+        port_id, port = self._get_port_test()
+        instance.get_port = mock.Mock(return_value=port)
+
+        floating_ip_request = {'floatingip': floating_ip_request_info}
+
+        res = self.api.put(test_base._get_path('floatingips',
+                                               id=floating_ip_id,
+                                               fmt=self.fmt),
+                           self.serialize(floating_ip_request))
+
+        instance.update_floatingip.\
             assert_called_once_with(mock.ANY,
-                                    fake_floating_ip_id,
+                                    floating_ip_id,
                                     floatingip=floating_ip_request)
-        self._verify_resp(resp, exc.HTTPOk.code,
-                          'floatingip', fake_floating_ip_id)
+
+        self.assertEqual(exc.HTTPOk.code, res.status_int)
+        res = self.deserialize(res)
+        self.assertIn('floatingip', res)
+        floatingip = res['floatingip']
+        self.assertEqual(floating_ip_id, floatingip['id'])
+        self.assertIsNone(floatingip['port_id'])
+        self.assertIsNone(floatingip['fixed_ip_address'])
 
     def test_delete_floating_ip(self):
-        self.instance.get_port = mock.Mock(return_value=fake_port)
-        url = test_base._get_path('floatingips', id=fake_floating_ip_id)
-        resp = self._test_send_msg(None, 'delete', url)
-        self.instance.delete_floatingip.\
-            assert_called_once_with(mock.ANY, fake_floating_ip_id)
-        self.assertEqual(resp.status_int, exc.HTTPNoContent.code)
+        floating_ip_id, floating_ip = self._get_floating_ip_test()
+
+        instance = self.plugin.return_value
+        instance.get_floatingip = mock.Mock(return_value=floating_ip)
+        res = self.api.delete(test_base._get_path('floatingips',
+                                                  id=floating_ip_id))
+        instance.delete_floatingip.assert_called_once_with(mock.ANY,
+                                                           floating_ip_id)
+
+        self.assertEqual(exc.HTTPNoContent.code, res.status_int)
 
     def test_add_router_interface(self):
         interface_info = {'tenant_id': fake_tenant_id,
