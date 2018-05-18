@@ -71,7 +71,7 @@ if is_service_enabled onos-compute; then
         install_onos_compute
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then
         if is_service_enabled nova; then
-            create_nova_conf_neutron
+            configure_neutron_nova_new
         fi
         bind_onos_controller
         # ONOS vtn will create $OVS_BR

@@ -19,10 +19,10 @@ from oslo_config import cfg
 from neutron.api.rpc.agentnotifiers import l3_rpc_agent_api
 from neutron.api.rpc.handlers import l3_rpc
 from neutron.common import rpc as n_rpc
-from neutron.common import topics
 from neutron.db import extraroute_db
 from neutron.db import l3_agentschedulers_db
 from neutron.db import l3_gwmode_db
+from neutron_lib.agent import topics
 from neutron_lib import constants as q_const
 
 from networking_onos.common import config  # noqa
@@ -57,7 +57,7 @@ class ONOSL3Plugin(common_db_mixin.CommonDbMixin,
 
     def setup_rpc(self):
         self.topic = topics.L3PLUGIN
-        self.conn = n_rpc.create_connection()
+        self.conn = n_rpc.Connection()
         self.agent_notifiers.update(
             {q_const.AGENT_TYPE_L3: l3_rpc_agent_api.L3AgentNotifyAPI()})
         self.endpoints = [l3_rpc.L3RpcCallback()]
