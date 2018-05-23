@@ -47,12 +47,6 @@ function init_onos {
 # install_onos() - Collect source and prepare
 function install_onos {
     echo "Installing ONOS and dependent packages"
-    if [[ "$ONOS_USING_EXISTING_JAVA" != "True" ]]
-    then
-        if ! setup_java "${ONOS_REQUIRED_JAVA_VERSION:-8}"; then
-           :
-        fi
-    fi
 
     echo "Installing docker"
     install_docker
@@ -97,14 +91,6 @@ function compose_sona_config_file {
 # start_onos() - Start running processes, including screen
 function start_onos {
     echo "Starting ONOS"
-
-    # The following variables are needed by the running karaf process.
-    # See the "bin/setenv" file in the ONOS distribution for
-    # their individual meaning.
-    setup_java_env
-    export JAVA_MIN_MEM=$ONOS_JAVA_MIN_MEM
-    export JAVA_MAX_MEM=$ONOS_JAVA_MAX_MEM
-    export JAVA_MAX_PERM_MEM=$ONOS_JAVA_MAX_PERM_MEM
 
     echo "Invoking docker sona"
     sudo docker run --name onos --network host -itd  opensona/onos-sona-nightly-docker

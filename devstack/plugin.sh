@@ -45,7 +45,6 @@ if is_service_enabled onos-server; then
     if [[ "$1" == "stack" && "$2" == "pre-install" ]]; then
         setup_onos_conf
     elif [[ "$1" == "stack" && "$2" == "install" ]]; then
-        setup_onos_package
         install_onos
         init_onos
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then
