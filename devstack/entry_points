@@ -28,6 +28,7 @@ function configure_neutron_onos {
 # installs docker
 function install_docker {
     sudo apt-get install -y docker.io
+    sudo usermod -aG docker $USER
 }
 
 # configure the existing conf_onos.ini file
