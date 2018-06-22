@@ -88,8 +88,24 @@ function compose_sona_config_file {
     echo "      \"type\" : \"COMPUTE\"," >> /tmp/sona_config
     echo "      \"managementIp\" : \"$HOST_IP\"," >> /tmp/sona_config
     echo "      \"dataIp\" : \"$HOST_IP\"," >> /tmp/sona_config
-    echo "      \"integrationBridge\" : \"of:00000000000000a1\" }" >> /tmp/sona_config
-    echo "       ] }" >> /tmp/sona_config
+    echo "      \"integrationBridge\" : \"of:00000000000000a1\" }," >> /tmp/sona_config
+    echo "      {" >> /tmp/sona_config
+    echo "      \"hostname\" : \"controller\"," >> /tmp/sona_config
+    echo "      \"type\" : \"CONTROLLER\"," >> /tmp/sona_config
+    echo "      \"managementIp\" : \"$HOST_IP\"," >> /tmp/sona_config
+    echo "      \"endPoint\" : \"$HOST_IP\"," >> /tmp/sona_config
+    echo "      \"authentication\" : {" >> /tmp/sona_config
+    echo "          \"version\" : \"v3\"," >> /tmp/sona_config
+    echo "          \"port\" : 80," >> /tmp/sona_config
+    echo "          \"protocol\" : \"HTTP\"," >> /tmp/sona_config
+    echo "          \"project\" : \"admin\"," >> /tmp/sona_config
+    echo "          \"username\" : \"admin\"," >> /tmp/sona_config
+    echo "          \"password\" : \"nova\"," >> /tmp/sona_config
+    echo "          \"perspective\" : \"PUBLIC\"" >> /tmp/sona_config
+    echo "          }" >> /tmp/sona_config
+    echo "      }" >> /tmp/sona_config
+    echo "      ]" >> /tmp/sona_config
+    echo "}" >> /tmp/sona_config
 }
 
 # start_onos() - Start running processes, including screen
