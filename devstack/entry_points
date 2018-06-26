@@ -27,7 +27,7 @@ function configure_neutron_onos {
 
 # installs docker
 function install_docker {
-    sudo apt-get install -y docker.io
+    wget -qO- https://get.docker.com/ | sudo sh
     # We need to logout and relogin to make it effective
     sudo usermod -aG docker $USER
     # It is an ugly hack to give permission to docker
