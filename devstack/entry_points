@@ -14,45 +14,6 @@ function cleanup_onos {
 }
 
 
-# configure_onos() - Set config files, create data dirs, etc
-function configure_onos {
-    echo "Configuring ONOS"
-    # The logging config file in ONOS
-    local ONOS_LOGGING_CONFIG=${ONOS_DIR}/${ONOS_NAME}/${ONOS_KARAF_DIR}/etc/org.ops4j.pax.logging.cfg
-
-    # Move Jetty to $ONOS_PORT
-    if [[ ! -f "$ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/etc/jetty.xml" ]]; then
-        cp $NETWORKING_ONOS_DIR/devstack/onos-releases/$ONOS_RELEASE-jetty.xml \
-        $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/etc/jetty.xml
-    fi
-    local _ONOSPORT=$(cat $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/etc/jetty.xml | grep $ONOS_PORT)
-    if [ "$_ONOSPORT" == "" ]; then
-        sed -i "/\<Property name\=\"jetty\.port/ s/8.../$ONOS_PORT/" \
-               $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/etc/jetty.xml
-    fi
-
-    # Remove existing logfiles
-    rm -f "/opt/stack/logs/$ONOS_KARAF_LOG_BASE*"
-    # Log karaf output to a file
-    _LF=/opt/stack/logs/$ONOS_KARAF_LOG_NAME
-    LF=$(echo $_LF | sed 's/\//\\\//g')
-    # Soft link for easy consumption
-    ln -sf $_LF "/opt/stack/logs/screen-karaf.txt"
-
-    # Change the karaf logfile
-    sed -i "/^log4j\.appender\.out\.file/ s/.*/log4j\.appender\.out\.file\=$LF/" \
-    $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/etc/org.ops4j.pax.logging.cfg
-
-    # Configure DEBUG logs for network virtualization in onos, if the user wants it
-    if [ "${ONOS_VTN_DEBUG_LOGS}" == "True" ]; then
-        sed -i "/^log4j\.rootLogger\=/ s/INFO/DEBUG/" \
-            $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/etc/org.ops4j.pax.logging.cfg
-    fi
-    if [[ "$ONOS_EXTERNAL_VETH" == "True" ]]; then
-        sudo ip link add ${ONOS_EXTERNAL_NIC} type veth peer name ${ONOS_EXTERNAL_NIC}out
-    fi
-}
-
 # configure_neutron_onos() - Set Neutron config files according to ONOS settings
 function configure_neutron_onos {
     echo "Configuring ML2 for ONOS"
@@ -60,7 +21,22 @@ function configure_neutron_onos {
     populate_ml2_config /$Q_PLUGIN_CONF_FILE onos username=$ONOS_USERNAME
     populate_ml2_config /$Q_PLUGIN_CONF_FILE onos password=$ONOS_PASSWORD
 
-    neutron_server_config_add /opt/stack/networking-onos/etc/conf_onos.ini
+    echo "Setting onos config"
+    neutron_server_config_add $NETWORKING_ONOS_DIR/etc/conf_onos.ini
+}
+
+# installs docker
+function install_docker {
+    wget -qO- https://get.docker.com/ | sudo sh
+    # We need to logout and relogin to make it effective
+    sudo usermod -aG docker $USER
+    # It is an ugly hack to give permission to docker
+    sudo chmod 666 /var/run/docker.sock
+}
+
+# configure the existing conf_onos.ini file
+function setup_onos_conf {
+    sed -i 's/HOST_IP/'$HOST_IP'/g' $NETWORKING_ONOS_DIR/etc/conf_onos.ini
 }
 
 
@@ -75,18 +51,12 @@ function init_onos {
 # install_onos() - Collect source and prepare
 function install_onos {
     echo "Installing ONOS and dependent packages"
-    if [[ "$ONOS_USING_EXISTING_JAVA" != "True" ]]
-    then
-        if ! setup_java "${ONOS_REQUIRED_JAVA_VERSION:-8}"; then
-            exit 1
-        fi
-    fi
 
+    echo "Installing docker"
+    install_docker
+
+    echo "Installing networking-onos"
     install_onos_neutron_thin_ml2_driver
-
-    cd $ONOS_DIR
-
-    unzip -u -o $ONOS_PKG
 }
 
 
@@ -104,49 +74,75 @@ function install_onos_compute {
     _neutron_ovs_base_install_agent_packages
 }
 
+# pushes the SONA configuration file
+function push_sona_config {
+    curl --user onos:rocks -X POST -H "Content-Type:application/json" -d "@/tmp/sona_config" http://$HOST_IP:8181/onos/openstacknode/configure
+}
+
+# creates a SONA configuration file
+function compose_sona_config_file {
+    rm -rf /tmp/sona_config
+    echo "{" > /tmp/sona_config
+    echo " \"nodes\" : [ " >> /tmp/sona_config
+    echo "     {\"hostname\" : \"compute-01\"," >> /tmp/sona_config
+    echo "      \"type\" : \"COMPUTE\"," >> /tmp/sona_config
+    echo "      \"managementIp\" : \"$HOST_IP\"," >> /tmp/sona_config
+    echo "      \"dataIp\" : \"$HOST_IP\"," >> /tmp/sona_config
+    echo "      \"integrationBridge\" : \"of:00000000000000a1\" }," >> /tmp/sona_config
+    echo "      {" >> /tmp/sona_config
+    echo "      \"hostname\" : \"controller\"," >> /tmp/sona_config
+    echo "      \"type\" : \"CONTROLLER\"," >> /tmp/sona_config
+    echo "      \"managementIp\" : \"$HOST_IP\"," >> /tmp/sona_config
+    echo "      \"endPoint\" : \"$HOST_IP\"," >> /tmp/sona_config
+    echo "      \"authentication\" : {" >> /tmp/sona_config
+    echo "          \"version\" : \"v3\"," >> /tmp/sona_config
+    echo "          \"port\" : 80," >> /tmp/sona_config
+    echo "          \"protocol\" : \"HTTP\"," >> /tmp/sona_config
+    echo "          \"project\" : \"admin\"," >> /tmp/sona_config
+    echo "          \"username\" : \"admin\"," >> /tmp/sona_config
+    echo "          \"password\" : \"nova\"," >> /tmp/sona_config
+    echo "          \"perspective\" : \"PUBLIC\"" >> /tmp/sona_config
+    echo "          }" >> /tmp/sona_config
+    echo "      }" >> /tmp/sona_config
+    echo "      ]" >> /tmp/sona_config
+    echo "}" >> /tmp/sona_config
+}
 
 # start_onos() - Start running processes, including screen
 function start_onos {
     echo "Starting ONOS"
 
-    # Wipe out the data and journal directories ... grumble grumble grumble
-    rm -rf $ONOS_DIR/$ONOS_NAME/data
-    rm -rf $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/data
+    echo "Invoking docker sona"
+    sudo docker run --name onos --network host -itd  opensona/onos-sona-nightly-docker
 
-    # The following variables are needed by the running karaf process.
-    # See the "bin/setenv" file in the ONOS distribution for
-    # their individual meaning.
-    setup_java_env
-    export JAVA_MIN_MEM=$ONOS_JAVA_MIN_MEM
-    export JAVA_MAX_MEM=$ONOS_JAVA_MAX_MEM
-    export JAVA_MAX_PERM_MEM=$ONOS_JAVA_MAX_PERM_MEM
-    run_process onos-server "$ONOS_DIR/$ONOS_NAME/bin/onos-service apps-clean server"
+    echo "Composing sona configuration file"
+    compose_sona_config_file
 
-    if [ -n "$ONOS_BOOT_WAIT_URL" ]; then
-        echo "Waiting for ONOS to start via $ONOS_BOOT_WAIT_URL ..."
-        # Probe ONOS networks for vtn until it is operational
-        local testcmd="curl -o /dev/null --fail --silent --head -u \
-              ${ONOS_USERNAME}:${ONOS_PASSWORD} http://${ONOS_MGR_IP}:${ONOS_PORT}/${ONOS_BOOT_WAIT_URL}"
-        test_with_retry "$testcmd" "ONOS vtn did not start after $ONOS_BOOT_WAIT" \
-              $ONOS_BOOT_WAIT $ONOS_RETRY_SLEEP_INTERVAL
-    else
-        echo "Waiting for ONOS to start ..."
-        # Sleep a bit to let ONOS finish starting up
-        sleep $ONOS_BOOT_WAIT
-    fi
-    echo "Setting ONOS external nic $ONOS_EXTERNAL_NIC"
-    if [[ "$ONOS_VETH" == "True" ]]; then
-        sudo ip link add ${ONOS_EXTERNAL_NIC} type veth peer name ${ONOS_EXTERNAL_NIC}out
-    fi
-    $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/bin/client -u karaf "onos:externalportname-set -n $ONOS_EXTERNAL_NIC"
+    echo "Waiting until ONOS boots up"
+    sleep 20
+
+    sudo apt-get install -y sshpass
+
+    # Change OVS DB port to 6650
+    sudo rm -rf ~/.ssh/known_hosts
+    sshpass -p karaf ssh -o "StrictHostKeyChecking=no" -p 8101 karaf@localhost cfg set org.onosproject.openstacknode.impl.DefaultOpenstackNodeHandler ovsdbPortNum 6650
+    sleep 2
+
+    echo "Setting OVS manager port to 6650"
+    bind_onos_controller
+    sleep 2
+
+    echo "Pushing sona configuration file to $HOST_IP"
+    push_sona_config
 }
+
 
 
 # stop_onos() - Stop running processes (non-screen)
 function stop_onos {
     # Stop the karaf container
-    $ONOS_DIR/$ONOS_NAME/${ONOS_KARAF_DIR}/bin/stop
-    stop_process onos-server
+    sudo docker stop onos
+    sudo docker rm onos
 }
 
 
@@ -182,15 +178,8 @@ function cleanup_onos_compute {
 function bind_onos_controller {
     echo_summary "Initializing ONOS"
     ONOS_LOCAL_IP=${ONOS_LOCAL_IP:-$HOST_IP}
-    ONOS_MGR_PORT=${ONOS_MGR_PORT:-6640}
-    ONOS_OVS_MANAGERS=${ONOS_OVS_MANAGERS:-$ONOS_MGR_IP}
-    read ovstbl <<< $(sudo ovs-vsctl get Open_vSwitch . _uuid)
-    local ONOS_MANAGERS_PARAM=()
-    for manager in $(echo $ONOS_OVS_MANAGERS | tr "," "\n"); do
-        ONOS_MANAGERS_PARAM=( "${ONOS_MANAGERS_PARAM[@]}" "tcp:$manager:$ONOS_MGR_PORT" )
-    done
-    sudo ovs-vsctl set-manager ${ONOS_MANAGERS_PARAM[@]}
-    sudo ovs-vsctl set Open_vSwitch $ovstbl other_config:local_ip=$ONOS_LOCAL_IP
+    ONOS_MGR_PORT=${ONOS_MGR_PORT:-6650}
+    sudo ovs-vsctl set-manager ptcp:$ONOS_MGR_PORT
 }
 
 
@@ -206,3 +195,11 @@ function unbind_onos_controller {
         sudo ip link delete ${ONOS_EXTERNAL_NIC} type veth
     fi
 }
+
+# configure cell information after openstack is completely installed
+function configure_cell_setup {
+    nova-manage cell_v2 map_cell0 --database_connection mysql+pymysql://root:nova@$HOST_IP/nova_cell0?charset=utf8
+    nova-manage cell_v2 simple_cell_setup --transport-url rabbit://stackrabbit:nova@$HOST_IP:5672/
+    nova-manage cell_v2 discover_hosts
+}
+
