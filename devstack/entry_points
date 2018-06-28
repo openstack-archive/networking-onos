@@ -134,6 +134,10 @@ function start_onos {
 
     echo "Pushing sona configuration file to $HOST_IP"
     push_sona_config
+    sleep 2
+
+    echo "Initializing all the openstack nodes"
+    sshpass -p karaf ssh -o "StrictHostKeyChecking=no" -p 8101 karaf@localhost openstack-node-init -a
 }
 
 
