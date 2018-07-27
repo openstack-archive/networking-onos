@@ -214,7 +214,8 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
 
         # then true is returned only for valid network types
         self.assertEqual({n_const.TYPE_LOCAL, n_const.TYPE_GRE,
-                          n_const.TYPE_VXLAN, n_const.TYPE_VLAN},
+                          n_const.TYPE_VXLAN, n_const.TYPE_VLAN,
+                          n_const.TYPE_FLAT},
                          valid_types)
 
     def test_bind_port(self):

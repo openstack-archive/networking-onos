@@ -138,4 +138,5 @@ class ONOSMechanismDriver(api.MechanismDriver):
         return segment[api.NETWORK_TYPE] in [n_const.TYPE_LOCAL,
                                              n_const.TYPE_GRE,
                                              n_const.TYPE_VXLAN,
-                                             n_const.TYPE_VLAN]
+                                             n_const.TYPE_VLAN,
+                                             n_const.TYPE_FLAT]
