@@ -20,7 +20,8 @@ import mock
 from neutron.extensions import l3
 from neutron.tests.unit.api.v2 import test_base
 from neutron.tests.unit.extensions import base as test_neutron_extensions
-from neutron_lib import constants
+from neutron_lib.api.definitions import l3 as l3_apidef
+from neutron_lib.plugins import constants
 
 from webob import exc
 
@@ -78,7 +79,7 @@ class ONOSL3PluginTestCase(test_neutron_extensions.ExtensionTestCase):
         super(ONOSL3PluginTestCase, self).setUp()
         self._setUpExtension(
             'neutron.services.l3_router.l3_router_plugin.L3RouterPlugin',
-            constants.L3, l3.RESOURCE_ATTRIBUTE_MAP,
+            constants.L3, l3_apidef.RESOURCE_ATTRIBUTE_MAP,
             l3.L3, '', allow_pagination=True, allow_sorting=True,
             supported_extension_aliases=['router'],
             use_quota=True)
