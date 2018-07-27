@@ -148,37 +148,6 @@ class ONOSL3PluginTestCase(test_neutron_extensions.ExtensionTestCase):
         self._verify_resp(resp, exc.HTTPCreated.code,
                           'floatingip', fake_floating_ip_id)
 
-    def test_update_floating_ip(self):
-        fake_floating_ip_update_info = {'port_id': None}
-        floatingip_info = copy.deepcopy(fake_floating_ip['floatingip'])
-        floatingip_info.update(fake_floating_ip_update_info)
-        floatingip_info.update({'status': 'ACTIVE',
-                                'tenant_id': fake_tenant_id,
-                                'floating_network_id': fake_network_id,
-                                'fixed_ip_address': None,
-                                'floating_ip_address': '172.24.4.228'})
-
-        self.instance.update_floatingip.return_value = floatingip_info
-        self.instance.get_port = mock.Mock(return_value=fake_port)
-        floating_ip_request = {'floatingip': fake_floating_ip_update_info}
-        url = test_base._get_path('floatingips',
-                                  id=fake_floating_ip_id, fmt=self.fmt)
-        resp = self._test_send_msg(floating_ip_request, 'put', url)
-        self.instance.update_floatingip.\
-            assert_called_once_with(mock.ANY,
-                                    fake_floating_ip_id,
-                                    floatingip=floating_ip_request)
-        self._verify_resp(resp, exc.HTTPOk.code,
-                          'floatingip', fake_floating_ip_id)
-
-    def test_delete_floating_ip(self):
-        self.instance.get_port = mock.Mock(return_value=fake_port)
-        url = test_base._get_path('floatingips', id=fake_floating_ip_id)
-        resp = self._test_send_msg(None, 'delete', url)
-        self.instance.delete_floatingip.\
-            assert_called_once_with(mock.ANY, fake_floating_ip_id)
-        self.assertEqual(resp.status_int, exc.HTTPNoContent.code)
-
     def test_add_router_interface(self):
         interface_info = {'tenant_id': fake_tenant_id,
                           'port_id': fake_port_id,
