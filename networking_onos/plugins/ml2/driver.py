@@ -27,6 +27,7 @@ from networking_onos.common import config  # noqa
 from networking_onos.common import utils as onos_utils
 
 LOG = logging.getLogger(__name__)
+DEFAULT_VLAN_ID = 0
 
 
 class ONOSMechanismDriver(api.MechanismDriver):
@@ -36,11 +37,19 @@ class ONOSMechanismDriver(api.MechanismDriver):
     Code which makes communication between ONOS and OpenStack Neutron
     possible.
     """
-    def __init__(self):
+    def __init__(self,
+                 vif_details={portbindings.CAP_PORT_FILTER: False},
+                 supported_vnic_types=[portbindings.VNIC_NORMAL,
+                                       portbindings.VNIC_DIRECT]):
         self.onos_path = cfg.CONF.onos.url_path
         self.onos_auth = (cfg.CONF.onos.username, cfg.CONF.onos.password)
-        self.vif_type = portbindings.VIF_TYPE_OVS
-        self.vif_details = {portbindings.CAP_PORT_FILTER: True}
+        self.vif_details = vif_details
+        self.supported_vnic_types = supported_vnic_types
+        self.vnic_type_for_vif_type = (
+            {vtype: portbindings.VIF_TYPE_HW_VEB
+                if vtype == portbindings.VNIC_DIRECT
+                else portbindings.VIF_TYPE_OVS
+             for vtype in self.supported_vnic_types})
 
     def initialize(self):
         LOG.debug("Initializing security group handler")
@@ -114,22 +123,44 @@ class ONOSMechanismDriver(api.MechanismDriver):
                   {'port': context.current['id'],
                    'network': context.network.current['id']})
         # Prepared porting binding data
+        vnic_type = context.current.get(portbindings.VNIC_TYPE,
+                                        portbindings.VNIC_NORMAL)
+        if vnic_type not in self.supported_vnic_types:
+            LOG.debug("Refusing to bind due to unsupported vnic_type: %s",
+                      vnic_type)
+            return
+
         for segment in context.segments_to_bind:
             if self.check_segment(segment):
+                vif_type = self.vnic_type_for_vif_type.get(
+                    vnic_type, portbindings.VIF_TYPE_OVS)
                 context.set_binding(segment[api.ID],
-                                    self.vif_type,
-                                    self.vif_details,
+                                    vif_type,
+                                    self._get_vif_details(segment),
                                     status=n_const.PORT_STATUS_ACTIVE)
                 LOG.debug("Port bound successful for segment: %s", segment)
                 return
             else:
-                LOG.debug("Port bound un-successfult for segment ID %(id)s, "
+                LOG.debug("Port bound un-successful for segment ID %(id)s, "
                           "segment %(seg)s, phys net %(physnet)s, and "
                           "network type %(nettype)s",
                           {'id': segment[api.ID],
                            'seg': segment[api.SEGMENTATION_ID],
                            'physnet': segment[api.PHYSICAL_NETWORK],
                            'nettype': segment[api.NETWORK_TYPE]})
+
+    def _get_vif_details(self, segment):
+        network_type = segment[api.NETWORK_TYPE]
+        vif_details = self.vif_details.copy()
+
+        if network_type == n_const.TYPE_VLAN:
+            vlan_id = segment[api.SEGMENTATION_ID]
+            vif_details[portbindings.VIF_DETAILS_VLAN] = str(vlan_id)
+        else:
+            vlan_id = DEFAULT_VLAN_ID
+            vif_details[portbindings.VIF_DETAILS_VLAN] = str(vlan_id)
+
+        return vif_details
 
     @log_helpers.log_method_call
     def check_segment(self, segment):
