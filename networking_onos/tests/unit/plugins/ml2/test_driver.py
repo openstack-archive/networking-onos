@@ -21,6 +21,7 @@ from oslo_serialization import jsonutils
 from oslotest import base
 
 from neutron.plugins.ml2 import driver_context as ctx
+from neutron_lib.api.definitions import portbindings
 from neutron_lib import constants as n_const
 from neutron_lib.plugins.ml2 import api
 
@@ -219,8 +220,18 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
                          valid_types)
 
     def test_bind_port(self):
-        self.vif_type = "MY_VIF_TYPE"
-        self.vif_details = "MY_VIF_DETAILS"
+        self.vif_type = portbindings.VIF_TYPE_OVS
+        self.vif_details = {portbindings.CAP_PORT_FILTER: False,
+                            portbindings.VIF_DETAILS_VLAN: '0'}
+        self.supported_vnic_types = [portbindings.VNIC_NORMAL,
+                                     portbindings.VNIC_DIRECT]
+
+        self.vnic_type_for_vif_type = (
+            {vtype: portbindings.VIF_TYPE_HW_VEB
+                if vtype == portbindings.VNIC_DIRECT
+                else portbindings.VIF_TYPE_OVS
+             for vtype in self.supported_vnic_types})
+
         network = mock.MagicMock(spec=api.NetworkContext)
         port_context = mock.MagicMock(
             spec=ctx.PortContext, current={'id': 'CURRENT_CONTEXT_ID'},
