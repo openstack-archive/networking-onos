@@ -21,7 +21,7 @@ from neutron.extensions import l3
 from neutron.tests.unit.api.v2 import test_base
 from neutron.tests.unit.extensions import base as test_neutron_extensions
 from neutron_lib.api.definitions import l3 as l3_apidef
-from neutron_lib import constants
+from neutron_lib.plugins import constants
 
 from webob import exc
 
