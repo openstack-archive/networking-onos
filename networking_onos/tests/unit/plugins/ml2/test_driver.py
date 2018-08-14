@@ -77,6 +77,8 @@ fake_port_object = {'status': 'DOWN',
                     'binding:vnic_type': 'normal',
                     'binding:vif_type': 'unbound',
                     'mac_address': '12:34:56 :78:21:b6'}
+fake_dpdk_json_return = {'vif_type': 'vhostuser',
+                         'socket_dir': '/var/lib/libvirt/qemu'}
 
 
 class ONOSMechanismDriverTestCase(base.BaseTestCase,
@@ -95,8 +97,16 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
                           cfg.CONF.onos.password)
 
     def _mock_req_resp(self, status_code):
-        response = mock.Mock(status_code=status_code)
+        response = mock.Mock(status_code=status_code, text="")
         response.raise_for_status = mock.Mock()
+        return response
+
+    def _mock_req_resp_with_json_payload(self, status_code):
+        response = mock.Mock(status_code=status_code,
+                             text=fake_dpdk_json_return)
+        response.raise_for_status = mock.Mock()
+        attr = {'json.return_value': fake_dpdk_json_return}
+        response.configure_mock(**attr)
         return response
 
     def _test_response(self, context, oper_type, obj_type, mock_method):
@@ -179,9 +189,23 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
             self.update_port_postcommit(context)
             self._test_response(context, 'put', 'port', mock_method)
 
+    def test_update_dpdk_port_postcommit(self):
+        self.dpdk_port_vif_type = {}
+        self.socket_directory = {}
+        context = mock.Mock(current=fake_port_object)
+        resp = self._mock_req_resp_with_json_payload(requests.codes.created)
+        with mock.patch('requests.request',
+                        return_value=resp) as mock_method:
+            self.update_port_postcommit(context)
+            self._test_response(context, 'put', 'port', mock_method)
+            assert context.current['id'] in self.dpdk_port_vif_type
+            assert context.current['id'] in self.socket_directory
+
     def test_delete_port_postcommit(self):
         context = mock.Mock(current={'id': fake_port_uuid})
         resp = self._mock_req_resp(requests.codes.created)
+        self.dpdk_port_vif_type = {}
+        self.socket_directory = {}
         with mock.patch('requests.request',
                         return_value=resp) as mock_method:
             self.delete_port_postcommit(context)
@@ -231,6 +255,7 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
                 if vtype == portbindings.VNIC_DIRECT
                 else portbindings.VIF_TYPE_OVS
              for vtype in self.supported_vnic_types})
+        self.dpdk_port_vif_type = {}
 
         network = mock.MagicMock(spec=api.NetworkContext)
         port_context = mock.MagicMock(

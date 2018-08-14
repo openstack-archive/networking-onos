@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import os
 from oslo_config import cfg
 from oslo_log import helpers as log_helpers
 from oslo_log import log as logging
@@ -28,6 +29,9 @@ from networking_onos.common import utils as onos_utils
 
 LOG = logging.getLogger(__name__)
 DEFAULT_VLAN_ID = 0
+VHOST_USER_SOCKET_DIR = '/var/run/openvswitch'
+OVS_DATAPATH_NETDEV = 'netdev'
+OVS_BRIDGE_BR_INT = 'br-int'
 
 
 class ONOSMechanismDriver(api.MechanismDriver):
@@ -50,6 +54,8 @@ class ONOSMechanismDriver(api.MechanismDriver):
                 if vtype == portbindings.VNIC_DIRECT
                 else portbindings.VIF_TYPE_OVS
              for vtype in self.supported_vnic_types})
+        self.dpdk_port_vif_type = {}
+        self.socket_directory = {}
 
     def initialize(self):
         LOG.debug("Initializing security group handler")
@@ -107,14 +113,33 @@ class ONOSMechanismDriver(api.MechanismDriver):
     def update_port_postcommit(self, context):
         entity_path = 'ports/' + context.current['id']
         resource = context.current.copy()
-        onos_utils.send_msg(self.onos_path, self.onos_auth, 'put',
-                            entity_path, {'port': resource})
+        resp = onos_utils.send_msg(self.onos_path, self.onos_auth, 'put',
+                                   entity_path, {'port': resource})
+        port_id = context.current['id']
+
+        """In case of netdev bridge, ONOS sends vif_type with vhostuser"""
+        if resp is not None and isinstance(resp, dict):
+            if 'vif_type' in resp and not (port_id in self.dpdk_port_vif_type):
+                    LOG.debug("vif_type for dpdk port (%(port)s) is (%(vif)s)",
+                              {'port': port_id,
+                               'vif': resp['vif_type']})
+                    self.dpdk_port_vif_type[port_id] = resp['vif_type']
+            if 'socket_dir' in resp and not (port_id in self.socket_directory):
+                LOG.debug("socket_dir for dpdk port (%(port)s) is (%(dir)s)",
+                          {'port': port_id,
+                           'dir': resp['socket_dir']})
+                self.socket_directory[port_id] = resp['socket_dir']
 
     @log_helpers.log_method_call
     def delete_port_postcommit(self, context):
         entity_path = 'ports/' + context.current['id']
         onos_utils.send_msg(self.onos_path, self.onos_auth, 'delete',
                             entity_path)
+        port_id = context.current['id']
+        if port_id in self.dpdk_port_vif_type:
+            del self.dpdk_port_vif_type[port_id]
+        if port_id in self.socket_directory:
+            del self.socket_directory[port_id]
 
     @log_helpers.log_method_call
     def bind_port(self, context):
@@ -132,12 +157,19 @@ class ONOSMechanismDriver(api.MechanismDriver):
 
         for segment in context.segments_to_bind:
             if self.check_segment(segment):
-                vif_type = self.vnic_type_for_vif_type.get(
-                    vnic_type, portbindings.VIF_TYPE_OVS)
-                context.set_binding(segment[api.ID],
-                                    vif_type,
-                                    self._get_vif_details(segment),
-                                    status=n_const.PORT_STATUS_ACTIVE)
+                if context.current['id'] in self.dpdk_port_vif_type:
+                    context.set_binding(segment[api.ID],
+                                        portbindings.VIF_TYPE_VHOST_USER,
+                                        self.get_vhost_user_vif_details(
+                                            context),
+                                        status=n_const.PORT_STATUS_ACTIVE)
+                else:
+                    vif_type = self.vnic_type_for_vif_type.get(
+                        vnic_type, portbindings.VIF_TYPE_OVS)
+                    context.set_binding(segment[api.ID],
+                                        vif_type,
+                                        self._get_vif_details(segment),
+                                        status=n_const.PORT_STATUS_ACTIVE)
                 LOG.debug("Port bound successful for segment: %s", segment)
                 return
             else:
@@ -161,6 +193,25 @@ class ONOSMechanismDriver(api.MechanismDriver):
             vif_details[portbindings.VIF_DETAILS_VLAN] = str(vlan_id)
 
         return vif_details
+
+    def get_vhost_user_vif_details(self, context):
+        mode = portbindings.VHOST_USER_MODE_SERVER
+        sockdir = VHOST_USER_SOCKET_DIR
+        port_id = context.current['id']
+
+        if port_id in self.socket_directory:
+            sockdir = self.socket_directory[port_id]
+
+        sock_name = (n_const.VHOST_USER_DEVICE_PREFIX + port_id)[:14]
+        sock_path = os.path.join(sockdir, sock_name)
+        details = {portbindings.CAP_PORT_FILTER: False,
+                   portbindings.OVS_HYBRID_PLUG: False,
+                   portbindings.VHOST_USER_MODE: mode,
+                   portbindings.VHOST_USER_OVS_PLUG: True,
+                   portbindings.VHOST_USER_SOCKET: sock_path,
+                   portbindings.OVS_DATAPATH_TYPE: OVS_DATAPATH_NETDEV,
+                   portbindings.VIF_DETAILS_BRIDGE_NAME: OVS_BRIDGE_BR_INT}
+        return details
 
     @log_helpers.log_method_call
     def check_segment(self, segment):

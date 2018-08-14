@@ -36,6 +36,8 @@ def send_msg(onos_path, onos_auth, msg_type, entity_path, entity=None):
                            auth=onos_auth)
     # Let's raise voice for an error
     req.raise_for_status()
+    if msg_type == 'put' and not req.text == "":
+        return req.json()
 
 
 def safe_delete_from_dict(dict, keys):
