@@ -44,16 +44,21 @@ class ONOSMechanismDriver(api.MechanismDriver):
     def __init__(self,
                  vif_details={portbindings.CAP_PORT_FILTER: False},
                  supported_vnic_types=[portbindings.VNIC_NORMAL,
-                                       portbindings.VNIC_DIRECT]):
+                                       portbindings.VNIC_DIRECT,
+                                       portbindings.VNIC_DIRECT_PHYSICAL]):
         self.onos_path = cfg.CONF.onos.url_path
         self.onos_auth = (cfg.CONF.onos.username, cfg.CONF.onos.password)
         self.vif_details = vif_details
         self.supported_vnic_types = supported_vnic_types
-        self.vnic_type_for_vif_type = (
-            {vtype: portbindings.VIF_TYPE_HW_VEB
-                if vtype == portbindings.VNIC_DIRECT
-                else portbindings.VIF_TYPE_OVS
-             for vtype in self.supported_vnic_types})
+        self.vnic_type_for_vif_type = {}
+        self.vnic_type_for_vif_type[
+            portbindings.VNIC_NORMAL] = portbindings.VIF_TYPE_OVS
+        self.vnic_type_for_vif_type[
+            portbindings.VNIC_DIRECT] = portbindings.VIF_TYPE_HW_VEB
+
+        self.direct_physical = portbindings.VNIC_DIRECT_PHYSICAL
+        self.host_dev = portbindings.VIF_TYPE_HOSTDEV_PHY
+        self.vnic_type_for_vif_type[self.direct_physical] = self.host_dev
         self.dpdk_port_vif_type = {}
         self.socket_directory = {}
 
