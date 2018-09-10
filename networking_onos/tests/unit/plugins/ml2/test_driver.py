@@ -110,7 +110,7 @@ class ONOSMechanismDriverTestCase(base.BaseTestCase,
         else:
             url = '%s/%s/%s' % (self.onos_path, obj_type + 's',
                                 context.current['id'])
-        kwargs = {'url': url, 'data': body}
+        kwargs = {'url': url, 'data': body, 'verify': False}
         mock_method.assert_called_once_with(
             method=oper_type,
             headers={'Content-Type': 'application/json'},
