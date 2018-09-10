@@ -33,7 +33,7 @@ def send_msg(onos_path, onos_auth, msg_type, entity_path, entity=None):
                'entity': entity, 'body': body})
     req = requests.request(method=msg_type, url=path,
                            headers=hdr, data=body,
-                           auth=onos_auth)
+                           auth=onos_auth, verify=False)
     # Let's raise voice for an error
     req.raise_for_status()
 
