@@ -13,7 +13,7 @@
 #  under the License.
 #
 
-from neutron.common import constants
+from neutron_lib import constants
 
 from networking_onos.common import utils as onos_utils
 
