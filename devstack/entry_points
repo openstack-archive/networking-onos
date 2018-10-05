@@ -142,7 +142,7 @@ function start_onos {
 function stop_onos {
     # Stop the karaf container
     sudo docker stop onos
-    sudo docker rm onos
+    sudo docker rm -f onos
 }
 
 
