@@ -58,8 +58,8 @@ Devstack method
 
 2. Update [[local|localrc]] with::
 
-    enable_plugin networking-sfc git://git.openstack.org/openstack/networking-sfc
-    enable_plugin networking-onos git://git.openstack.org/openstack/networking-onos
+    enable_plugin networking-sfc https://git.openstack.org/openstack/networking-sfc
+    enable_plugin networking-onos https://git.openstack.org/openstack/networking-onos
 
 3. run ./stack.sh
 
