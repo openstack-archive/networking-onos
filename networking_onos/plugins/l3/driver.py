@@ -30,14 +30,8 @@ from networking_onos.common import config  # noqa
 from networking_onos.plugins.l3 import floating_ip as onos_fip
 from networking_onos.plugins.l3 import router as onos_router
 
-try:
-    from neutron.db.db_base_plugin_v2 import common_db_mixin
-except ImportError as e:
-    from neutron.db import common_db_mixin
 
-
-class ONOSL3Plugin(common_db_mixin.CommonDbMixin,
-                   extraroute_db.ExtraRoute_db_mixin,
+class ONOSL3Plugin(extraroute_db.ExtraRoute_db_mixin,
                    l3_gwmode_db.L3_NAT_db_mixin,
                    l3_agentschedulers_db.L3AgentSchedulerDbMixin,
                    onos_router.ONOSRouter,
