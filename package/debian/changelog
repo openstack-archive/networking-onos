@@ -1,5 +1,0 @@
-networking-onos (2016.3.1) experimental; urgency=medium
-
-  * Initial release. (Closes-Bug: 1529769)
-
- -- Mohammad Shahid <mohammad.shahid1@huawei.com>  Tue, 14 Mar 2016 10:34:21 +0100
